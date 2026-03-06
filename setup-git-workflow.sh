@@ -119,20 +119,36 @@ while true; do
     
     # Optional: try to remove from global gitignore if it was previously ignored
     GLOBAL_IGNORE=$(git config --global core.excludesfile || echo "")
-    if [[ -n "$GLOBAL_IGNORE" && -f "$GLOBAL_IGNORE" ]] && grep -q "agent-actions.md" "$GLOBAL_IGNORE"; then
-      sed -i.bak '/agent-actions.md/d' "$GLOBAL_IGNORE" && rm -f "${GLOBAL_IGNORE}.bak" || true
-      echo "✓ Removed agent-actions.md from global gitignore ($GLOBAL_IGNORE)"
-    fi
+    XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
+    DEFAULT_GLOBAL_IGNORE="${XDG_CONFIG_HOME}/git/ignore"
+    
+    for ignore_file in "$GLOBAL_IGNORE" "$DEFAULT_GLOBAL_IGNORE"; do
+      if [[ -n "$ignore_file" && -f "$ignore_file" ]] && grep -q "agent-actions.md" "$ignore_file"; then
+        sed -i.bak '/agent-actions.md/d' "$ignore_file" && rm -f "${ignore_file}.bak" || true
+        echo "✓ Removed agent-actions.md from global gitignore ($ignore_file)"
+      fi
+    done
     break
   elif [[ "$tracking_pref" == "n" || "$tracking_pref" == "N" ]]; then
     TRACKING_TEXT="The \`agent-actions.md\` log is local-only. Never stage or commit it."
     
     # Add to global gitignore
-    GLOBAL_IGNORE=$(git config --global core.excludesfile || echo "${HOME}/.gitignore_global")
+    GLOBAL_IGNORE=$(git config --global core.excludesfile || echo "")
+    XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
+    DEFAULT_GLOBAL_IGNORE="${XDG_CONFIG_HOME}/git/ignore"
+    
+    if [[ -z "$GLOBAL_IGNORE" ]]; then
+      if [[ -f "$DEFAULT_GLOBAL_IGNORE" ]]; then
+        GLOBAL_IGNORE="$DEFAULT_GLOBAL_IGNORE"
+      else
+        GLOBAL_IGNORE="${HOME}/.gitignore_global"
+        git config --global core.excludesfile "$GLOBAL_IGNORE"
+      fi
+    fi
+
     if [[ ! -f "$GLOBAL_IGNORE" ]] || ! grep -q "agent-actions.md" "$GLOBAL_IGNORE"; then
       mkdir -p "$(dirname "$GLOBAL_IGNORE")"
       echo "agent-actions.md" >> "$GLOBAL_IGNORE"
-      git config --global core.excludesfile "$GLOBAL_IGNORE"
       echo "✓ Added agent-actions.md to global gitignore ($GLOBAL_IGNORE)"
     fi
     break
