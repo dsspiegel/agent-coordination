@@ -36,7 +36,7 @@ Log after:
 ### Log Entry Format
 
 ```markdown
-## YYYY-MM-DD HH:MM AM/PM TZ; [Agent Name]
+## YYYY-MM-DD HH:MM AM/PM TZ; [Agent Name] ([Model Name])
 
 ### Summary
 One-line description of what was accomplished.
@@ -57,23 +57,39 @@ One-line description of what was accomplished.
 ### Example Entry
 
 ```markdown
-## 2026-03-05 2:45 PM PST; Claude Code
+## 2026-03-05 10:15 AM PST; Gemini CLI (Gemini 2.5 Pro)
 
 ### Summary
-Implemented go-links redirect endpoint with access tracking.
+Initialized Express backend and added React frontend.
 
 ### Details
-- Added `/go/<slug>` route in `main.py`
-- Increment `access_count` and update `accessed_at` on each redirect
-- Used Firestore transaction to avoid race conditions on counter
+- Scaffolded Node server in `/backend` and React app in `/frontend`.
+- Added `POST /api/login` endpoint.
 
 ### Blockers / Challenges
-- Initially tried incrementing outside a transaction; hit race condition under load
-- Firestore's `increment()` field transform solved it without needing explicit transaction
+- Frontend fetch to `/api/login` is failing due to CORS. 
+- Added basic `cors()` middleware but it's rejecting the request because the frontend is sending credentials (cookies).
+- Handoff due to hitting session limits.
 
 ### Next Steps
-- "My Links" dashboard view not yet started
-- Need to add ownership check for edit/delete endpoints
+- Need to properly configure CORS to accept credentials without using a wildcard `*` origin.
+
+---
+
+## 2026-03-05 11:30 AM PST; Claude Code (Claude 3.7 Sonnet -> Opus 4.6)
+
+### Summary
+Fixed CORS authentication error between frontend and backend.
+
+### Details
+- Updated `backend/server.js` to dynamically reflect the `req.header('Origin')` instead of using `Access-Control-Allow-Origin: *`.
+
+### Blockers / Challenges
+- Initially, using the Sonnet model, I struggled to generate the correct dynamic origin function required by the `cors` package when `credentials: true` is set.
+- The user switched me to the **Opus 4.6** model, which correctly identified the specific Express configuration needed to make this work.
+
+### Next Steps
+- Implement the "Dashboard" view now that login works.
 ```
 
 ---
@@ -90,7 +106,7 @@ Human contributors are also welcome to log context here.
 
 ---
 
-## YYYY-MM-DD HH:MM AM/PM TZ; [Agent Name]
+## YYYY-MM-DD HH:MM AM/PM TZ; [Agent Name] ([Model Name])
 
 ### Summary
 Initialized project / began work on [description].
@@ -110,7 +126,7 @@ When reviewing code written by another agent (or human):
 2. **Log your review** before making changes:
 
 ```markdown
-## YYYY-MM-DD HH:MM AM/PM TZ; [Agent Name]
+## YYYY-MM-DD HH:MM AM/PM TZ; [Agent Name] ([Model Name])
 
 ### Summary
 Code review of [feature/PR/commit].
@@ -137,7 +153,7 @@ When you cannot complete a task (hitting context limits, user switching agents, 
 2. **Log current state explicitly**:
 
 ```markdown
-## YYYY-MM-DD HH:MM AM/PM TZ; [Agent Name]
+## YYYY-MM-DD HH:MM AM/PM TZ; [Agent Name] ([Model Name])
 
 ### Summary
 Handoff — [reason: context limit / switching agents / blocked].

@@ -34,22 +34,39 @@ Once installed, agents following this protocol will:
 ## Example Log Entry
 
 ```markdown
-## 2026-03-05 2:45 PM PST; Claude Code
+## 2026-03-05 10:15 AM PST; Gemini CLI (Gemini 2.5 Pro)
 
 ### Summary
-Implemented go-links redirect endpoint with access tracking.
+Initialized Express backend and added React frontend.
 
 ### Details
-- Added `/go/<slug>` route in `src/routes/links.py`
-- Used Firestore transaction for atomic counter increment
+- Scaffolded Node server in `/backend` and React app in `/frontend`.
+- Added `POST /api/login` endpoint.
 
 ### Blockers / Challenges
-- Initially tried incrementing outside transaction; hit race condition under load
-- Firestore's `increment()` field transform solved it
+- Frontend fetch to `/api/login` is failing due to CORS. 
+- Added basic `cors()` middleware but it's rejecting the request because the frontend is sending credentials (cookies).
+- Handoff due to hitting session limits.
 
 ### Next Steps
-- "My Links" dashboard view not yet started
-- Need to add ownership check for edit/delete endpoints
+- Need to properly configure CORS to accept credentials without using a wildcard `*` origin.
+
+---
+
+## 2026-03-05 11:30 AM PST; Claude Code (Claude 3.7 Sonnet -> Opus 4.6)
+
+### Summary
+Fixed CORS authentication error between frontend and backend.
+
+### Details
+- Updated `backend/server.js` to dynamically reflect the `req.header('Origin')` instead of using `Access-Control-Allow-Origin: *`.
+
+### Blockers / Challenges
+- Initially, using the Sonnet model, I struggled to generate the correct dynamic origin function required by the `cors` package when `credentials: true` is set.
+- The user switched me to the **Opus 4.6** model, which correctly identified the specific Express configuration needed to make this work.
+
+### Next Steps
+- Implement the "Dashboard" view now that login works.
 ```
 
 ## Supported Agents
@@ -70,12 +87,24 @@ ln -s ~/.agent-skills/agent-coordination.md ~/.your-agent/
 
 ## Uninstall
 
+You can quickly remove the coordination protocol and the optional git workflow files by running the uninstall script:
+
 ```bash
-rm ~/.agent-skills/agent-coordination.md
-rm ~/.claude/agent-coordination.md
-rm ~/.gemini/agent-coordination.md
-# ... etc for any other agents
+curl -fsSL https://raw.githubusercontent.com/dsspiegel/agent-coordination/main/uninstall.sh | bash
 ```
+
+## Optional: Configure Git Workflow
+
+AI agents often default to pushing code directly to your `main` or `master` branch. While this is fast, you might prefer reviewing their work via Pull Requests before it gets merged.
+
+This repository includes an optional tool to establish consistent Git habits across all your CLI agents.
+
+Run the interactive setup script:
+```bash
+./setup-git-workflow.sh
+```
+
+This script gathers your preferences on several key Git workflow choices (like direct pushes vs. PRs, and commit message formats) and stores those rules across all your agents' **instruction profiles**.
 
 ## Philosophy
 
