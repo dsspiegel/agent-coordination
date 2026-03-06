@@ -136,7 +136,7 @@ for agent_info in "${AGENTS[@]}"; do
   if [[ -d "${config_dir}" ]]; then
     ln -sf "${SKILL_DIR}/${GIT_SKILL_FILE}" "${config_dir}/${GIT_SKILL_FILE}"
     echo "✓ Linked to ${agent} profile (${config_dir}/${GIT_SKILL_FILE})"
-    ((LINKED++))
+    LINKED=$((LINKED + 1))
   fi
 done
 

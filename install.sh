@@ -39,7 +39,7 @@ for agent_info in "${AGENTS[@]}"; do
     mkdir -p "${config_dir}"
     ln -sf "${SKILL_DIR}/${SKILL_FILE}" "${config_dir}/${SKILL_FILE}"
     echo "  Linked: ${config_dir}/${SKILL_FILE}"
-    ((LINKED++))
+    LINKED=$((LINKED + 1))
   else
     if [[ -n "$cmd" ]]; then
       echo "· Not found: ${agent}"
@@ -58,7 +58,7 @@ for agent_info in "${AGENTS[@]}"; do
     echo "✓ Found config dir: ${config_dir} (${agent})"
     ln -sf "${SKILL_DIR}/${SKILL_FILE}" "${config_dir}/${SKILL_FILE}"
     echo "  Linked: ${config_dir}/${SKILL_FILE}"
-    ((LINKED++))
+    LINKED=$((LINKED + 1))
   fi
 done
 

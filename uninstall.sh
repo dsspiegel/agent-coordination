@@ -25,13 +25,13 @@ for agent_info in "${AGENTS[@]}"; do
   if [[ -L "${config_dir}/${SKILL_FILE}" ]]; then
     rm "${config_dir}/${SKILL_FILE}"
     echo "✓ Removed ${SKILL_FILE} from ${agent}"
-    ((REMOVED++))
+    REMOVED=$((REMOVED + 1))
   fi
 
   if [[ -L "${config_dir}/${GIT_SKILL_FILE}" ]]; then
     rm "${config_dir}/${GIT_SKILL_FILE}"
     echo "✓ Removed ${GIT_SKILL_FILE} from ${agent}"
-    ((REMOVED++))
+    REMOVED=$((REMOVED + 1))
   fi
 done
 
