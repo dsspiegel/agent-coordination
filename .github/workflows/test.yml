@@ -42,7 +42,7 @@ jobs:
           test -f ~/.agent-skills/agent-git-workflow.md
           test -L ~/.gemini/agent-git-workflow.md
           grep -q "numbered steps" ~/.agent-skills/agent-git-workflow.md
-          grep -q "Informal" ~/.agent-skills/agent-git-workflow.md
+          grep -q "Conventional Commits" ~/.agent-skills/agent-git-workflow.md
           
       - name: Run Setup Git Workflow Script (Ignore Log)
         run: |
@@ -50,7 +50,7 @@ jobs:
           # Setup dummy git config to avoid errors
           git config --global user.email "test@example.com"
           git config --global user.name "Test User"
-          printf "a\nb\ny\ny\nn\n" | bash setup-git-workflow.sh
+          printf "a\na\ny\ny\nn\n" | bash setup-git-workflow.sh
           GLOBAL_IGNORE=$(git config --global core.excludesfile)
           grep -q "agent-actions.md" "$GLOBAL_IGNORE"
           
