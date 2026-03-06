@@ -10,61 +10,89 @@ echo "This script will help you define how AI agents interact with Git."
 echo ""
 
 # 1. PR vs Direct Push
-echo "1) How should agents handle code changes?"
-echo "   [a] Structured Workflow: Always create a new branch and open a Pull Request (Safest)"
-echo "   [b] Direct Push: Push directly to the main/master branch (Fastest)"
-read -p "Your choice [a/b]: " merge_pref
+while true; do
+  echo "1) How should agents handle code changes?"
+  echo "   [a] Structured Workflow: Always create a new branch and open a Pull Request (Safest)"
+  echo "   [b] Direct Push: Push directly to the main/master branch (Fastest)"
+  read -p "Your choice [a/b]: " merge_pref
 
-if [[ "$merge_pref" == "b" ]]; then
-  MERGE_TEXT="You are permitted to push directly to the main or master branch for all changes. Numbered steps (branching/PRs) are not required unless specifically requested by the user."
-else
-  MERGE_TEXT="Always follow these numbered steps for code changes:
+  if [[ "$merge_pref" == "a" || "$merge_pref" == "A" ]]; then
+    MERGE_TEXT="Always follow these numbered steps for code changes:
 1. Create a descriptive local branch.
 2. Commit your changes to that branch.
 3. Push the branch to the remote repository.
 4. Create a Pull Request (PR) for human review.
 Do NOT push directly to the main or master branch."
-fi
+    break
+  elif [[ "$merge_pref" == "b" || "$merge_pref" == "B" ]]; then
+    MERGE_TEXT="You are permitted to push directly to the main or master branch for all changes. Numbered steps (branching/PRs) are not required unless specifically requested by the user."
+    break
+  else
+    echo "Invalid choice. Please enter 'a' or 'b'."
+    echo ""
+  fi
+done
 
 echo ""
 
 # 2. Commit Message Style
-echo "2) Which commit message style do you prefer?"
-echo "   [a] Informal (e.g., 'Add login endpoint')"
-echo "   [b] Structured / Conventional (e.g., 'feat(api): add login endpoint')"
-read -p "Your choice [a/b]: " commit_pref
+while true; do
+  echo "2) Which commit message style do you prefer?"
+  echo "   [a] Informal (e.g., 'Add login endpoint')"
+  echo "   [b] Structured / Conventional (e.g., 'feat(api): add login endpoint')"
+  read -p "Your choice [a/b]: " commit_pref
 
-if [[ "$commit_pref" == "b" ]]; then
-  COMMIT_TEXT="Use the Structured / Conventional Commits specification (e.g., feat:, fix:, docs:, chore:, refactor:) for all commit messages."
-else
-  COMMIT_TEXT="Use Informal, clear, imperative-style commit messages (e.g., 'Add feature X', 'Fix bug Y')."
-fi
+  if [[ "$commit_pref" == "a" || "$commit_pref" == "A" ]]; then
+    COMMIT_TEXT="Use Informal, clear, imperative-style commit messages (e.g., 'Add feature X', 'Fix bug Y')."
+    break
+  elif [[ "$commit_pref" == "b" || "$commit_pref" == "B" ]]; then
+    COMMIT_TEXT="Use the Structured / Conventional Commits specification (e.g., feat:, fix:, docs:, chore:, refactor:) for all commit messages."
+    break
+  else
+    echo "Invalid choice. Please enter 'a' or 'b'."
+    echo ""
+  fi
+done
 
 echo ""
 
 # 3. Verification
-echo "3) Should agents attempt to run tests/linting before committing?"
-echo "   [y/n]"
-read -p "Your choice [y/n]: " test_pref
+while true; do
+  echo "3) Should agents attempt to run tests/linting before committing?"
+  echo "   [y/n]"
+  read -p "Your choice [y/n]: " test_pref
 
-if [[ "$test_pref" == "y" || "$test_pref" == "Y" ]]; then
-  TEST_TEXT="Always attempt to run existing tests and linting commands (e.g., 'npm test', 'pytest', 'npm run lint') before committing. If they fail, fix the issues or report the blockers."
-else
-  TEST_TEXT="Running tests before commit is optional unless the user specifically asks."
-fi
+  if [[ "$test_pref" == "y" || "$test_pref" == "Y" ]]; then
+    TEST_TEXT="Always attempt to run existing tests and linting commands (e.g., 'npm test', 'pytest', 'npm run lint') before committing. If they fail, fix the issues or report the blockers."
+    break
+  elif [[ "$test_pref" == "n" || "$test_pref" == "N" ]]; then
+    TEST_TEXT="Running tests before commit is optional unless the user specifically asks."
+    break
+  else
+    echo "Invalid choice. Please enter 'y' or 'n'."
+    echo ""
+  fi
+done
 
 echo ""
 
 # 4. Branch Cleanup
-echo "4) Should agents periodically check if PRs have been merged and clean up local branches?"
-echo "   [y/n]"
-read -p "Your choice [y/n]: " cleanup_pref
+while true; do
+  echo "4) Should agents periodically check if PRs have been merged and clean up local branches?"
+  echo "   [y/n]"
+  read -p "Your choice [y/n]: " cleanup_pref
 
-if [[ "$cleanup_pref" == "y" || "$cleanup_pref" == "Y" ]]; then
-  CLEANUP_TEXT="At the beginning of each session, check for any of your local branches where the corresponding Pull Request has been merged. Delete these branches to keep the workspace clean."
-else
-  CLEANUP_TEXT="Do not automatically delete local branches unless the user explicitly requests a cleanup."
-fi
+  if [[ "$cleanup_pref" == "y" || "$cleanup_pref" == "Y" ]]; then
+    CLEANUP_TEXT="At the beginning of each session, check for any of your local branches where the corresponding Pull Request has been merged. Delete these branches to keep the workspace clean."
+    break
+  elif [[ "$cleanup_pref" == "n" || "$cleanup_pref" == "N" ]]; then
+    CLEANUP_TEXT="Do not automatically delete local branches unless the user explicitly requests a cleanup."
+    break
+  else
+    echo "Invalid choice. Please enter 'y' or 'n'."
+    echo ""
+  fi
+done
 
 # Create the markdown file
 mkdir -p "${SKILL_DIR}"
@@ -94,18 +122,17 @@ echo ""
 echo "✓ Git workflow profile created at ${SKILL_DIR}/${GIT_SKILL_FILE}"
 
 # Sync to agents
-# Reuse the detection logic from install.sh
-declare -A AGENTS=(
-  ["Claude Code"]="${HOME}/.claude"
-  ["Gemini CLI"]="${HOME}/.gemini"
-  ["Codex CLI"]="${HOME}/.codex"
-  ["Aider"]="${HOME}/.aider"
-  ["Continue"]="${HOME}/.continue"
+AGENTS=(
+  "Claude Code|${HOME}/.claude"
+  "Gemini CLI|${HOME}/.gemini"
+  "Codex CLI|${HOME}/.codex"
+  "Aider|${HOME}/.aider"
+  "Continue|${HOME}/.continue"
 )
 
 LINKED=0
-for agent in "${!AGENTS[@]}"; do
-  config_dir="${AGENTS[$agent]}"
+for agent_info in "${AGENTS[@]}"; do
+  IFS='|' read -r agent config_dir <<< "$agent_info"
   if [[ -d "${config_dir}" ]]; then
     ln -sf "${SKILL_DIR}/${GIT_SKILL_FILE}" "${config_dir}/${GIT_SKILL_FILE}"
     echo "✓ Linked to ${agent} profile (${config_dir}/${GIT_SKILL_FILE})"

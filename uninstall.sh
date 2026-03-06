@@ -4,12 +4,12 @@ SKILL_DIR="${HOME}/.agent-skills"
 SKILL_FILE="agent-coordination.md"
 GIT_SKILL_FILE="agent-git-workflow.md"
 
-declare -A AGENTS=(
-  ["Claude Code"]="${HOME}/.claude"
-  ["Gemini CLI"]="${HOME}/.gemini"
-  ["Codex CLI"]="${HOME}/.codex"
-  ["Aider"]="${HOME}/.aider"
-  ["Continue"]="${HOME}/.continue"
+AGENTS=(
+  "Claude Code|${HOME}/.claude"
+  "Gemini CLI|${HOME}/.gemini"
+  "Codex CLI|${HOME}/.codex"
+  "Aider|${HOME}/.aider"
+  "Continue|${HOME}/.continue"
 )
 
 echo "Uninstalling Agent Coordination tools..."
@@ -19,8 +19,8 @@ echo ""
 REMOVED=0
 
 # Remove symlinks from agent directories
-for agent in "${!AGENTS[@]}"; do
-  config_dir="${AGENTS[$agent]}"
+for agent_info in "${AGENTS[@]}"; do
+  IFS='|' read -r agent config_dir <<< "$agent_info"
   
   if [[ -L "${config_dir}/${SKILL_FILE}" ]]; then
     rm "${config_dir}/${SKILL_FILE}"

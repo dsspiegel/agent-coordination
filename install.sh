@@ -5,13 +5,14 @@ SKILL_DIR="${HOME}/.agent-skills"
 SKILL_FILE="agent-coordination.md"
 SKILL_URL="https://raw.githubusercontent.com/dsspiegel/agent-coordination/main/AGENT-COORDINATION.md"
 
-# Agent configurations: command to check, config directory
-declare -A AGENTS=(
-  ["Claude Code"]="claude:${HOME}/.claude"
-  ["Gemini CLI"]="gemini:${HOME}/.gemini"
-  ["Codex CLI"]="codex:${HOME}/.codex"
-  ["Aider"]="aider:${HOME}/.aider"
-  ["Continue"]="continue:${HOME}/.continue"
+# Agent configurations: "Name|Command|ConfigDir"
+# Note: 'Continue' doesn't use a command check because 'continue' is a Bash keyword.
+AGENTS=(
+  "Claude Code|claude|${HOME}/.claude"
+  "Gemini CLI|gemini|${HOME}/.gemini"
+  "Codex CLI|codex|${HOME}/.codex"
+  "Aider|aider|${HOME}/.aider"
+  "Continue||${HOME}/.continue"
 )
 
 echo "Agent Coordination Skill Installer"
@@ -30,26 +31,28 @@ LINKED=0
 echo "Detecting installed agents..."
 echo ""
 
-for agent in "${!AGENTS[@]}"; do
-  IFS=':' read -r cmd config_dir <<< "${AGENTS[$agent]}"
+for agent_info in "${AGENTS[@]}"; do
+  IFS='|' read -r agent cmd config_dir <<< "$agent_info"
   
-  if command -v "$cmd" &> /dev/null; then
+  if [[ -n "$cmd" ]] && command -v "$cmd" &> /dev/null; then
     echo "✓ Found: ${agent}"
     mkdir -p "${config_dir}"
     ln -sf "${SKILL_DIR}/${SKILL_FILE}" "${config_dir}/${SKILL_FILE}"
     echo "  Linked: ${config_dir}/${SKILL_FILE}"
     ((LINKED++))
   else
-    echo "· Not found: ${agent}"
+    if [[ -n "$cmd" ]]; then
+      echo "· Not found: ${agent}"
+    fi
   fi
 done
 
 echo ""
 
 # Also check for config dirs that exist even if command isn't in PATH
-# (some agents might be installed but not in PATH, or use different binary names)
-for agent in "${!AGENTS[@]}"; do
-  IFS=':' read -r cmd config_dir <<< "${AGENTS[$agent]}"
+# (some agents might be installed but not in PATH, or use different binary names like Continue)
+for agent_info in "${AGENTS[@]}"; do
+  IFS='|' read -r agent cmd config_dir <<< "$agent_info"
   
   if [[ -d "${config_dir}" ]] && [[ ! -L "${config_dir}/${SKILL_FILE}" ]]; then
     echo "✓ Found config dir: ${config_dir} (${agent})"
