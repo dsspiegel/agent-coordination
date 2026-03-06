@@ -94,6 +94,19 @@ rm ~/.gemini/agent-coordination.md
 # ... etc for any other agents
 ```
 
+## Optional: Configure Git Workflow
+
+AI agents often default to pushing code directly to your `main` or `master` branch. While this is fast, you might prefer reviewing their work via Pull Requests before it gets merged.
+
+This repository includes an optional tool to establish consistent Git habits across all your CLI agents.
+
+Run the interactive setup script:
+```bash
+./setup-git-workflow.sh
+```
+
+This script gathers your preferences on several key Git workflow choices (like direct pushes vs. PRs, and commit message formats) and stores those rules across all your agents' **instruction profiles**.
+
 ## Philosophy
 
 - **Simple**: It's just a markdown file. No databases, no servers, no dependencies.
