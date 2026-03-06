@@ -61,7 +61,7 @@ echo "   [y/n]"
 read -p "Your choice [y/n]: " cleanup_pref
 
 if [[ "$cleanup_pref" == "y" || "$cleanup_pref" == "Y" ]]; then
-  CLEANUP_TEXT="Periodically check if your previously opened Pull Requests have been merged. If they have, delete the corresponding local branches to keep the workspace clean."
+  CLEANUP_TEXT="At the beginning of each session, check for any of your local branches where the corresponding Pull Request has been merged. Delete these branches to keep the workspace clean."
 else
   CLEANUP_TEXT="Do not automatically delete local branches unless the user explicitly requests a cleanup."
 fi
