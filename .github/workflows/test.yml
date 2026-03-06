@@ -34,7 +34,7 @@ jobs:
           
       - name: Run Setup Git Workflow Script
         run: |
-          # Pipe blank answers to simulate hitting [Enter] for all defaults (a, b, y, y, y)
+          # Pipe blank answers to simulate hitting [Enter] for all defaults (a, a, y, y, y)
           printf "\n\n\n\n\n" | bash setup-git-workflow.sh
           
       - name: Verify Setup Git Workflow
@@ -53,6 +53,13 @@ jobs:
           printf "a\na\ny\ny\nn\n" | bash setup-git-workflow.sh
           GLOBAL_IGNORE=$(git config --global core.excludesfile)
           grep -q "agent-actions.md" "$GLOBAL_IGNORE"
+          
+      - name: Run Setup Git Workflow Script (Track Log)
+        run: |
+          # Test question 5 'Yes' answer to verify removal from global gitignore
+          printf "a\na\ny\ny\ny\n" | bash setup-git-workflow.sh
+          GLOBAL_IGNORE=$(git config --global core.excludesfile)
+          if grep -q "agent-actions.md" "$GLOBAL_IGNORE"; then exit 1; fi
           
       - name: Run Uninstall Script
         run: bash uninstall.sh
