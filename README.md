@@ -34,7 +34,7 @@ Once installed, agents following this protocol will:
 ## Example Log Entry
 
 ```markdown
-## 2026-03-05 10:15 AM PST; Gemini CLI
+## 2026-03-05 10:15 AM PST; Gemini CLI (Gemini 2.5 Pro)
 
 ### Summary
 Initialized Express backend and added React frontend.
@@ -53,7 +53,7 @@ Initialized Express backend and added React frontend.
 
 ---
 
-## 2026-03-05 11:30 AM PST; Claude Code
+## 2026-03-05 11:30 AM PST; Claude Code (Claude 3.7 Sonnet -> Opus 4.6)
 
 ### Summary
 Fixed CORS authentication error between frontend and backend.

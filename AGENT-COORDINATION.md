@@ -36,7 +36,7 @@ Log after:
 ### Log Entry Format
 
 ```markdown
-## YYYY-MM-DD HH:MM AM/PM TZ; [Agent Name]
+## YYYY-MM-DD HH:MM AM/PM TZ; [Agent Name] ([Model Name])
 
 ### Summary
 One-line description of what was accomplished.
@@ -57,7 +57,7 @@ One-line description of what was accomplished.
 ### Example Entry
 
 ```markdown
-## 2026-03-05 10:15 AM PST; Gemini CLI
+## 2026-03-05 10:15 AM PST; Gemini CLI (Gemini 2.5 Pro)
 
 ### Summary
 Initialized Express backend and added React frontend.
@@ -76,7 +76,7 @@ Initialized Express backend and added React frontend.
 
 ---
 
-## 2026-03-05 11:30 AM PST; Claude Code
+## 2026-03-05 11:30 AM PST; Claude Code (Claude 3.7 Sonnet -> Opus 4.6)
 
 ### Summary
 Fixed CORS authentication error between frontend and backend.
@@ -106,7 +106,7 @@ Human contributors are also welcome to log context here.
 
 ---
 
-## YYYY-MM-DD HH:MM AM/PM TZ; [Agent Name]
+## YYYY-MM-DD HH:MM AM/PM TZ; [Agent Name] ([Model Name])
 
 ### Summary
 Initialized project / began work on [description].
@@ -126,7 +126,7 @@ When reviewing code written by another agent (or human):
 2. **Log your review** before making changes:
 
 ```markdown
-## YYYY-MM-DD HH:MM AM/PM TZ; [Agent Name]
+## YYYY-MM-DD HH:MM AM/PM TZ; [Agent Name] ([Model Name])
 
 ### Summary
 Code review of [feature/PR/commit].
@@ -153,7 +153,7 @@ When you cannot complete a task (hitting context limits, user switching agents, 
 2. **Log current state explicitly**:
 
 ```markdown
-## YYYY-MM-DD HH:MM AM/PM TZ; [Agent Name]
+## YYYY-MM-DD HH:MM AM/PM TZ; [Agent Name] ([Model Name])
 
 ### Summary
 Handoff — [reason: context limit / switching agents / blocked].
