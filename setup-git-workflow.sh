@@ -38,14 +38,14 @@ done
 
 echo ""
 
-# 2. Commit Message Style (Default: b)
+# 2. Commit Message Style (Default: a)
 while true; do
   echo "2) Which commit message style do you prefer?"
   echo "   [a] Informal (e.g., 'Add login endpoint')"
   echo "   [b] Structured / Conventional (e.g., 'feat(api): add login endpoint')"
-  read -p "Your choice [a/B]: " commit_pref || { echo -e "\nSetup aborted."; exit 1; }
+  read -p "Your choice [A/b]: " commit_pref || { echo -e "\nSetup aborted."; exit 1; }
 
-  commit_pref=${commit_pref:-b} # Default to 'b' if empty
+  commit_pref=${commit_pref:-a} # Default to 'a' if empty
 
   if [[ "$commit_pref" == "a" || "$commit_pref" == "A" ]]; then
     COMMIT_TEXT="Use Informal, clear, imperative-style commit messages (e.g., 'Add feature X', 'Fix bug Y')."

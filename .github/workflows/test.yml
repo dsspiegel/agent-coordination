@@ -42,7 +42,7 @@ jobs:
           test -f ~/.agent-skills/agent-git-workflow.md
           test -L ~/.gemini/agent-git-workflow.md
           grep -q "numbered steps" ~/.agent-skills/agent-git-workflow.md
-          grep -q "Conventional Commits" ~/.agent-skills/agent-git-workflow.md
+          grep -q "Informal" ~/.agent-skills/agent-git-workflow.md
           
       - name: Run Setup Git Workflow Script (Ignore Log)
         run: |
