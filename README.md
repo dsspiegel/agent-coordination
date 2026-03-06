@@ -87,11 +87,10 @@ ln -s ~/.agent-skills/agent-coordination.md ~/.your-agent/
 
 ## Uninstall
 
+You can quickly remove the coordination protocol and the optional git workflow files by running the uninstall script:
+
 ```bash
-rm ~/.agent-skills/agent-coordination.md
-rm ~/.claude/agent-coordination.md
-rm ~/.gemini/agent-coordination.md
-# ... etc for any other agents
+curl -fsSL https://raw.githubusercontent.com/dsspiegel/agent-coordination/main/uninstall.sh | bash
 ```
 
 ## Optional: Configure Git Workflow
