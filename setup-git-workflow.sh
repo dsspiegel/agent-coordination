@@ -53,6 +53,19 @@ else
   TEST_TEXT="Running tests before commit is optional unless the user specifically asks."
 fi
 
+echo ""
+
+# 4. Branch Cleanup
+echo "4) Should agents periodically check if PRs have been merged and clean up local branches?"
+echo "   [y/n]"
+read -p "Your choice [y/n]: " cleanup_pref
+
+if [[ "$cleanup_pref" == "y" || "$cleanup_pref" == "Y" ]]; then
+  CLEANUP_TEXT="Periodically check if your previously opened Pull Requests have been merged. If they have, delete the corresponding local branches to keep the workspace clean."
+else
+  CLEANUP_TEXT="Do not automatically delete local branches unless the user explicitly requests a cleanup."
+fi
+
 # Create the markdown file
 mkdir -p "${SKILL_DIR}"
 
@@ -69,6 +82,9 @@ ${COMMIT_TEXT}
 
 ## Verification
 ${TEST_TEXT}
+
+## Workspace Cleanup
+${CLEANUP_TEXT}
 
 ## Accountability
 Always include the branch name and, if applicable, the Pull Request URL in your \`agent-actions.md\` log entry.
