@@ -69,6 +69,39 @@ jobs:
           echo "agent-actions.md" > ~/.config/git/ignore
           printf "a\na\ny\ny\ny\n" | bash setup-git-workflow.sh
           if grep -q "agent-actions.md" ~/.config/git/ignore; then exit 1; fi
+
+      - name: Sync AGENTS.md (Create + Check + Idempotence)
+        run: |
+          TEST_REPO="$(mktemp -d)"
+
+          # Create AGENTS.md from scratch
+          bash sync-agents-md.sh --repo "$TEST_REPO"
+          test -f "$TEST_REPO/AGENTS.md"
+          grep -q "BEGIN MANAGED: agent-coordination" "$TEST_REPO/AGENTS.md"
+          grep -q "Git Workflow Profile (Managed Snapshot)" "$TEST_REPO/AGENTS.md"
+
+          # Check mode should pass when up to date
+          bash sync-agents-md.sh --repo "$TEST_REPO" --check
+
+          # Re-running should preserve non-managed content and remain stable
+          printf "\\nCustom notes outside managed block.\\n" >> "$TEST_REPO/AGENTS.md"
+          bash sync-agents-md.sh --repo "$TEST_REPO"
+          grep -q "Custom notes outside managed block." "$TEST_REPO/AGENTS.md"
+          HASH_BEFORE="$(cksum "$TEST_REPO/AGENTS.md" | cut -d' ' -f1,2)"
+          bash sync-agents-md.sh --repo "$TEST_REPO"
+          HASH_AFTER="$(cksum "$TEST_REPO/AGENTS.md" | cut -d' ' -f1,2)"
+          test "$HASH_BEFORE" = "$HASH_AFTER"
+
+      - name: Sync AGENTS.md Check Fails When Outdated
+        run: |
+          TEST_REPO="$(mktemp -d)"
+          bash sync-agents-md.sh --repo "$TEST_REPO"
+          awk '{ sub(/Required Workflow/, "Required Workflow BROKEN"); print }' "$TEST_REPO/AGENTS.md" > "$TEST_REPO/AGENTS.md.tmp"
+          mv "$TEST_REPO/AGENTS.md.tmp" "$TEST_REPO/AGENTS.md"
+          if bash sync-agents-md.sh --repo "$TEST_REPO" --check; then
+            echo "expected --check to fail for outdated AGENTS.md"
+            exit 1
+          fi
           
       - name: Run Uninstall Script
         run: bash uninstall.sh
