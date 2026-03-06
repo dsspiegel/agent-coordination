@@ -117,19 +117,23 @@ while true; do
   if [[ "$tracking_pref" == "y" || "$tracking_pref" == "Y" ]]; then
     TRACKING_TEXT="The \`agent-actions.md\` log should be tracked and committed to Git like a normal file."
     
-    # Optional: try to remove from .gitignore if it was previously ignored
-    if [[ -f ".gitignore" ]] && grep -q "agent-actions.md" ".gitignore"; then
-      sed -i.bak '/agent-actions.md/d' .gitignore && rm -f .gitignore.bak || true
-      echo "✓ Removed agent-actions.md from local .gitignore"
+    # Optional: try to remove from global gitignore if it was previously ignored
+    GLOBAL_IGNORE=$(git config --global core.excludesfile || echo "")
+    if [[ -n "$GLOBAL_IGNORE" && -f "$GLOBAL_IGNORE" ]] && grep -q "agent-actions.md" "$GLOBAL_IGNORE"; then
+      sed -i.bak '/agent-actions.md/d' "$GLOBAL_IGNORE" && rm -f "${GLOBAL_IGNORE}.bak" || true
+      echo "✓ Removed agent-actions.md from global gitignore ($GLOBAL_IGNORE)"
     fi
     break
   elif [[ "$tracking_pref" == "n" || "$tracking_pref" == "N" ]]; then
     TRACKING_TEXT="The \`agent-actions.md\` log is local-only. Never stage or commit it."
     
-    # Add to .gitignore
-    if [[ ! -f ".gitignore" ]] || ! grep -q "agent-actions.md" ".gitignore"; then
-      echo -e "\nagent-actions.md" >> .gitignore
-      echo "✓ Added agent-actions.md to local .gitignore"
+    # Add to global gitignore
+    GLOBAL_IGNORE=$(git config --global core.excludesfile || echo "${HOME}/.gitignore_global")
+    if [[ ! -f "$GLOBAL_IGNORE" ]] || ! grep -q "agent-actions.md" "$GLOBAL_IGNORE"; then
+      mkdir -p "$(dirname "$GLOBAL_IGNORE")"
+      echo "agent-actions.md" >> "$GLOBAL_IGNORE"
+      git config --global core.excludesfile "$GLOBAL_IGNORE"
+      echo "✓ Added agent-actions.md to global gitignore ($GLOBAL_IGNORE)"
     fi
     break
   else
