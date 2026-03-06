@@ -106,6 +106,26 @@ Run the interactive setup script:
 
 This script gathers your preferences on several key Git workflow choices (like direct pushes vs. PRs, and commit message formats) and stores those rules across all your agents' **instruction profiles**.
 
+## Optional: Sync `AGENTS.md` In A Repo
+
+To enforce coordination rules at the repository level, generate or update a managed block inside `AGENTS.md`:
+
+```bash
+./sync-agents-md.sh --repo /path/to/your/repo
+```
+
+What it does:
+- Creates `AGENTS.md` if missing
+- Inserts or updates a managed coordination block
+- Pulls in your local `~/.agent-skills/agent-git-workflow.md` profile when available
+- Preserves any manual content outside the managed markers
+
+For CI enforcement, run check mode:
+
+```bash
+./sync-agents-md.sh --repo /path/to/your/repo --check
+```
+
 ## Philosophy
 
 - **Simple**: It's just a markdown file. No databases, no servers, no dependencies.
