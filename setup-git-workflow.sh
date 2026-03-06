@@ -14,7 +14,7 @@ while true; do
   echo "1) How should agents handle code changes?"
   echo "   [a] Structured Workflow: Always create a new branch and open a Pull Request (Safest)"
   echo "   [b] Direct Push: Push directly to the main/master branch (Fastest)"
-  read -p "Your choice [a/b]: " merge_pref
+  read -p "Your choice [a/b]: " merge_pref || { echo -e "\nSetup aborted."; exit 1; }
 
   if [[ "$merge_pref" == "a" || "$merge_pref" == "A" ]]; then
     MERGE_TEXT="Always follow these numbered steps for code changes:
@@ -40,7 +40,7 @@ while true; do
   echo "2) Which commit message style do you prefer?"
   echo "   [a] Informal (e.g., 'Add login endpoint')"
   echo "   [b] Structured / Conventional (e.g., 'feat(api): add login endpoint')"
-  read -p "Your choice [a/b]: " commit_pref
+  read -p "Your choice [a/b]: " commit_pref || { echo -e "\nSetup aborted."; exit 1; }
 
   if [[ "$commit_pref" == "a" || "$commit_pref" == "A" ]]; then
     COMMIT_TEXT="Use Informal, clear, imperative-style commit messages (e.g., 'Add feature X', 'Fix bug Y')."
@@ -60,7 +60,7 @@ echo ""
 while true; do
   echo "3) Should agents attempt to run tests/linting before committing?"
   echo "   [y/n]"
-  read -p "Your choice [y/n]: " test_pref
+  read -p "Your choice [y/n]: " test_pref || { echo -e "\nSetup aborted."; exit 1; }
 
   if [[ "$test_pref" == "y" || "$test_pref" == "Y" ]]; then
     TEST_TEXT="Always attempt to run existing tests and linting commands (e.g., 'npm test', 'pytest', 'npm run lint') before committing. If they fail, fix the issues or report the blockers."
@@ -80,7 +80,7 @@ echo ""
 while true; do
   echo "4) Should agents periodically check if PRs have been merged and clean up local branches?"
   echo "   [y/n]"
-  read -p "Your choice [y/n]: " cleanup_pref
+  read -p "Your choice [y/n]: " cleanup_pref || { echo -e "\nSetup aborted."; exit 1; }
 
   if [[ "$cleanup_pref" == "y" || "$cleanup_pref" == "Y" ]]; then
     CLEANUP_TEXT="At the beginning of each session, check for any of your local branches where the corresponding Pull Request has been merged. Delete these branches to keep the workspace clean."
