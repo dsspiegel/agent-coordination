@@ -87,9 +87,9 @@ jobs:
           printf "\\nCustom notes outside managed block.\\n" >> "$TEST_REPO/AGENTS.md"
           bash sync-agents-md.sh --repo "$TEST_REPO"
           grep -q "Custom notes outside managed block." "$TEST_REPO/AGENTS.md"
-          HASH_BEFORE="$(cksum "$TEST_REPO/AGENTS.md" | awk '{print $1\":\"$2}')"
+          HASH_BEFORE="$(cksum "$TEST_REPO/AGENTS.md" | cut -d' ' -f1,2)"
           bash sync-agents-md.sh --repo "$TEST_REPO"
-          HASH_AFTER="$(cksum "$TEST_REPO/AGENTS.md" | awk '{print $1\":\"$2}')"
+          HASH_AFTER="$(cksum "$TEST_REPO/AGENTS.md" | cut -d' ' -f1,2)"
           test "$HASH_BEFORE" = "$HASH_AFTER"
 
       - name: Sync AGENTS.md Check Fails When Outdated
