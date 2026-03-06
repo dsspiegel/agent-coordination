@@ -34,14 +34,41 @@ jobs:
           
       - name: Run Setup Git Workflow Script
         run: |
-          # Pipe answers to simulate interactive usage
-          printf "a\nb\ny\ny\n" | bash setup-git-workflow.sh
+          # Pipe blank answers to simulate hitting [Enter] for all defaults (a, a, y, y, y)
+          printf "\n\n\n\n\n" | bash setup-git-workflow.sh
           
       - name: Verify Setup Git Workflow
         run: |
           test -f ~/.agent-skills/agent-git-workflow.md
           test -L ~/.gemini/agent-git-workflow.md
           grep -q "numbered steps" ~/.agent-skills/agent-git-workflow.md
+          grep -q "Conventional Commits" ~/.agent-skills/agent-git-workflow.md
+          
+      - name: Run Setup Git Workflow Script (Ignore Log)
+        run: |
+          # Test question 5 'No' answer for .gitignore functionality
+          # Setup dummy git config to avoid errors
+          git config --global user.email "test@example.com"
+          git config --global user.name "Test User"
+          printf "a\na\ny\ny\nn\n" | bash setup-git-workflow.sh
+          GLOBAL_IGNORE=$(git config --global core.excludesfile)
+          grep -q "agent-actions.md" "$GLOBAL_IGNORE"
+          
+      - name: Run Setup Git Workflow Script (Track Log)
+        run: |
+          # Test question 5 'Yes' answer to verify removal from global gitignore
+          printf "a\na\ny\ny\ny\n" | bash setup-git-workflow.sh
+          GLOBAL_IGNORE=$(git config --global core.excludesfile)
+          if grep -q "agent-actions.md" "$GLOBAL_IGNORE"; then exit 1; fi
+          
+      - name: Run Setup Git Workflow Script (Track Log - XDG fallback)
+        run: |
+          # Test question 5 'Yes' answer removes from XDG fallback when core.excludesfile is unset
+          git config --global --unset core.excludesfile || true
+          mkdir -p ~/.config/git
+          echo "agent-actions.md" > ~/.config/git/ignore
+          printf "a\na\ny\ny\ny\n" | bash setup-git-workflow.sh
+          if grep -q "agent-actions.md" ~/.config/git/ignore; then exit 1; fi
           
       - name: Run Uninstall Script
         run: bash uninstall.sh
