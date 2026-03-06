@@ -41,7 +41,7 @@ jobs:
         run: |
           test -f ~/.agent-skills/agent-git-workflow.md
           test -L ~/.gemini/agent-git-workflow.md
-          grep -q "Numbered Steps" ~/.agent-skills/agent-git-workflow.md || true
+          grep -q "numbered steps" ~/.agent-skills/agent-git-workflow.md
           
       - name: Run Uninstall Script
         run: bash uninstall.sh
