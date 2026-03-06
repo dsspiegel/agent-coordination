@@ -77,7 +77,7 @@ Fixed CORS authentication error between frontend and backend.
 | Gemini CLI | `~/.gemini/` | `gemini` command |
 | Codex CLI | `~/.codex/` | `codex` command |
 | Aider | `~/.aider/` | `aider` command |
-| Continue | `~/.continue/` | `continue` command |
+| Continue | `~/.continue/` | `~/.continue/` dir |
 
 ### Adding Another Agent
 

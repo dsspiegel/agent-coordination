@@ -1,0 +1,54 @@
+name: CI Tests
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  test:
+    name: Test Scripts (${{ matrix.os }})
+    strategy:
+      matrix:
+        # macos-latest uses bash 3.2 by default, ubuntu-latest uses bash 5+
+        os: [macos-latest, ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Create mock environment
+        run: |
+          mkdir -p ~/.agent-skills
+          mkdir -p ~/.claude ~/.gemini ~/.codex ~/.aider ~/.continue
+          
+      - name: Run Install Script
+        run: bash install.sh
+        
+      - name: Verify Install
+        run: |
+          test -f ~/.agent-skills/agent-coordination.md
+          test -L ~/.claude/agent-coordination.md
+          test -L ~/.continue/agent-coordination.md
+          
+      - name: Run Setup Git Workflow Script
+        run: |
+          # Pipe answers to simulate interactive usage
+          printf "a\nb\ny\ny\n" | bash setup-git-workflow.sh
+          
+      - name: Verify Setup Git Workflow
+        run: |
+          test -f ~/.agent-skills/agent-git-workflow.md
+          test -L ~/.gemini/agent-git-workflow.md
+          grep -q "numbered steps" ~/.agent-skills/agent-git-workflow.md
+          
+      - name: Run Uninstall Script
+        run: bash uninstall.sh
+        
+      - name: Verify Uninstall
+        run: |
+          test ! -f ~/.agent-skills/agent-coordination.md
+          test ! -L ~/.claude/agent-coordination.md
+          test ! -f ~/.agent-skills/agent-git-workflow.md
+          test ! -L ~/.gemini/agent-git-workflow.md
