@@ -28,6 +28,10 @@ The installer will:
 1. Download the skill file to `~/.agent-skills/`
 2. Detect which agents you have installed (Claude Code, Gemini CLI, Codex, Aider, Continue)
 3. Symlink the skill file into each agent's config directory
+4. Create or update managed instruction blocks in:
+   - `~/.codex/AGENTS.md`
+   - `~/.claude/CLAUDE.md`
+   - `~/.gemini/GEMINI.md`
 
 ## What Agents Will Do
 
@@ -101,6 +105,8 @@ You can quickly remove the coordination protocol and the optional git workflow f
 curl -fsSL https://raw.githubusercontent.com/dsspiegel/agent-coordination/main/uninstall.sh | bash
 ```
 
+The uninstall script also removes the managed instruction blocks previously added to Codex/Claude/Gemini instruction files.
+
 ## Optional: Configure Git Workflow
 
 AI agents often default to pushing code directly to your `main` or `master` branch. While this is fast, you might prefer reviewing their work via Pull Requests before it gets merged.
@@ -113,6 +119,7 @@ Run the interactive setup script:
 ```
 
 This script gathers your preferences on several key Git workflow choices (like direct pushes vs. PRs, and commit message formats) and stores those rules across all your agents' **instruction profiles**.
+It also refreshes the managed instruction blocks in `~/.codex/AGENTS.md`, `~/.claude/CLAUDE.md`, and `~/.gemini/GEMINI.md` so the latest Git workflow profile is included.
 
 ## Optional: Sync `AGENTS.md` In A Repo
 
