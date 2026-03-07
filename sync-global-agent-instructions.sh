@@ -246,7 +246,6 @@ for entry in "${TARGETS[@]}"; do
     fi
 
     rm -f "$generated_block_file" "$updated_file"
-    TMP_FILES=("${TMP_FILES[@]:0:${#TMP_FILES[@]}-2}")
   fi
 done
 
