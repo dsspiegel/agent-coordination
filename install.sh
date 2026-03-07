@@ -4,6 +4,7 @@ set -e
 SKILL_DIR="${HOME}/.agent-skills"
 SKILL_FILE="agent-coordination.md"
 SKILL_URL="https://raw.githubusercontent.com/dsspiegel/agent-coordination/main/AGENT-COORDINATION.md"
+SYNC_GLOBAL_URL="https://raw.githubusercontent.com/dsspiegel/agent-coordination/main/sync-global-agent-instructions.sh"
 
 # Agent configurations: "Name|Command|ConfigDir"
 # Note: 'Continue' doesn't use a command check because 'continue' is a Bash keyword.
@@ -78,3 +79,29 @@ fi
 echo ""
 echo "To add support for a new agent, just run:"
 echo "  ln -s ${SKILL_DIR}/${SKILL_FILE} ~/.new-agent/"
+
+echo ""
+echo "Syncing global instruction entry points..."
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+LOCAL_SYNC_SCRIPT="${SCRIPT_DIR}/sync-global-agent-instructions.sh"
+
+if [[ -f "${LOCAL_SYNC_SCRIPT}" ]]; then
+  if ! bash "${LOCAL_SYNC_SCRIPT}"; then
+    echo "WARNING: Failed to sync global instruction files via local helper."
+  fi
+else
+  if command -v curl &> /dev/null; then
+    TMP_SYNC_SCRIPT="$(mktemp)"
+    if curl -fsSL "${SYNC_GLOBAL_URL}" -o "${TMP_SYNC_SCRIPT}"; then
+      if ! bash "${TMP_SYNC_SCRIPT}"; then
+        echo "WARNING: Failed to sync global instruction files via downloaded helper."
+      fi
+    else
+      echo "WARNING: Could not download global instruction sync helper."
+    fi
+    rm -f "${TMP_SYNC_SCRIPT}"
+  else
+    echo "WARNING: curl is required to sync global instruction files in this mode."
+  fi
+fi
