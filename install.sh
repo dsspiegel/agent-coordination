@@ -83,5 +83,22 @@ echo ""
 echo "Syncing global instruction entry points..."
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-source "${SCRIPT_DIR}/sync-helper.sh"
-sync_global_agent_instructions
+SYNC_HELPER_URL="https://raw.githubusercontent.com/dsspiegel/agent-coordination/main/sync-helper.sh"
+
+if [[ -f "${SCRIPT_DIR}/sync-helper.sh" ]]; then
+  source "${SCRIPT_DIR}/sync-helper.sh"
+elif command -v curl &> /dev/null; then
+  TMP_HELPER="$(mktemp)"
+  if curl -fsSL "${SYNC_HELPER_URL}" -o "${TMP_HELPER}"; then
+    source "${TMP_HELPER}"
+  else
+    echo "WARNING: Could not download sync helper."
+  fi
+  rm -f "${TMP_HELPER}"
+else
+  echo "WARNING: curl is required to sync global instruction files in this mode."
+fi
+
+if command -v sync_global_agent_instructions &> /dev/null; then
+  sync_global_agent_instructions
+fi
