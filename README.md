@@ -12,6 +12,14 @@ A simple, tool-agnostic protocol where agents maintain a shared `agent-actions.m
 
 ## Install
 
+From a local clone:
+
+```bash
+./install.sh
+```
+
+Or run it directly from GitHub:
+
 ```bash
 curl -fsSL https://raw.githubusercontent.com/dsspiegel/agent-coordination/main/install.sh | bash
 ```
