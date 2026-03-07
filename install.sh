@@ -4,7 +4,6 @@ set -e
 SKILL_DIR="${HOME}/.agent-skills"
 SKILL_FILE="agent-coordination.md"
 SKILL_URL="https://raw.githubusercontent.com/dsspiegel/agent-coordination/main/AGENT-COORDINATION.md"
-SYNC_GLOBAL_URL="https://raw.githubusercontent.com/dsspiegel/agent-coordination/main/sync-global-agent-instructions.sh"
 
 # Agent configurations: "Name|Command|ConfigDir"
 # Note: 'Continue' doesn't use a command check because 'continue' is a Bash keyword.
@@ -84,24 +83,22 @@ echo ""
 echo "Syncing global instruction entry points..."
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-LOCAL_SYNC_SCRIPT="${SCRIPT_DIR}/sync-global-agent-instructions.sh"
+SYNC_HELPER_URL="https://raw.githubusercontent.com/dsspiegel/agent-coordination/main/sync-helper.sh"
 
-if [[ -f "${LOCAL_SYNC_SCRIPT}" ]]; then
-  if ! bash "${LOCAL_SYNC_SCRIPT}"; then
-    echo "WARNING: Failed to sync global instruction files via local helper."
-  fi
-else
-  if command -v curl &> /dev/null; then
-    TMP_SYNC_SCRIPT="$(mktemp)"
-    if curl -fsSL "${SYNC_GLOBAL_URL}" -o "${TMP_SYNC_SCRIPT}"; then
-      if ! bash "${TMP_SYNC_SCRIPT}"; then
-        echo "WARNING: Failed to sync global instruction files via downloaded helper."
-      fi
-    else
-      echo "WARNING: Could not download global instruction sync helper."
-    fi
-    rm -f "${TMP_SYNC_SCRIPT}"
+if [[ -f "${SCRIPT_DIR}/sync-helper.sh" ]]; then
+  source "${SCRIPT_DIR}/sync-helper.sh"
+elif command -v curl &> /dev/null; then
+  TMP_HELPER="$(mktemp)"
+  if curl -fsSL "${SYNC_HELPER_URL}" -o "${TMP_HELPER}"; then
+    source "${TMP_HELPER}"
   else
-    echo "WARNING: curl is required to sync global instruction files in this mode."
+    echo "WARNING: Could not download sync helper."
   fi
+  rm -f "${TMP_HELPER}"
+else
+  echo "WARNING: curl is required to sync global instruction files in this mode."
+fi
+
+if command -v sync_global_agent_instructions &> /dev/null; then
+  sync_global_agent_instructions
 fi
