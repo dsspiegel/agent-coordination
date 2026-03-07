@@ -84,24 +84,5 @@ echo ""
 echo "Syncing global instruction entry points..."
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-LOCAL_SYNC_SCRIPT="${SCRIPT_DIR}/sync-global-agent-instructions.sh"
-
-if [[ -f "${LOCAL_SYNC_SCRIPT}" ]]; then
-  if ! bash "${LOCAL_SYNC_SCRIPT}"; then
-    echo "WARNING: Failed to sync global instruction files via local helper."
-  fi
-else
-  if command -v curl &> /dev/null; then
-    TMP_SYNC_SCRIPT="$(mktemp)"
-    if curl -fsSL "${SYNC_GLOBAL_URL}" -o "${TMP_SYNC_SCRIPT}"; then
-      if ! bash "${TMP_SYNC_SCRIPT}"; then
-        echo "WARNING: Failed to sync global instruction files via downloaded helper."
-      fi
-    else
-      echo "WARNING: Could not download global instruction sync helper."
-    fi
-    rm -f "${TMP_SYNC_SCRIPT}"
-  else
-    echo "WARNING: curl is required to sync global instruction files in this mode."
-  fi
-fi
+source "${SCRIPT_DIR}/sync-helper.sh"
+sync_global_agent_instructions

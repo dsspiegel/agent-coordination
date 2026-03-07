@@ -60,27 +60,8 @@ echo ""
 echo "Removing managed global instruction blocks..."
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-LOCAL_SYNC_SCRIPT="${SCRIPT_DIR}/sync-global-agent-instructions.sh"
-
-if [[ -f "${LOCAL_SYNC_SCRIPT}" ]]; then
-  if ! bash "${LOCAL_SYNC_SCRIPT}" --remove; then
-    echo "WARNING: Failed to remove managed global instruction blocks via local helper."
-  fi
-else
-  if command -v curl &> /dev/null; then
-    TMP_SYNC_SCRIPT="$(mktemp)"
-    if curl -fsSL "${SYNC_GLOBAL_URL}" -o "${TMP_SYNC_SCRIPT}"; then
-      if ! bash "${TMP_SYNC_SCRIPT}" --remove; then
-        echo "WARNING: Failed to remove managed global instruction blocks via downloaded helper."
-      fi
-    else
-      echo "WARNING: Could not download global instruction sync helper."
-    fi
-    rm -f "${TMP_SYNC_SCRIPT}"
-  else
-    echo "WARNING: curl is required to remove managed global instruction blocks in this mode."
-  fi
-fi
+source "${SCRIPT_DIR}/sync-helper.sh"
+sync_global_agent_instructions "--remove"
 
 echo "=========================================="
 if [[ $REMOVED -gt 0 ]]; then
