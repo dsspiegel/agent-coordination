@@ -8,6 +8,18 @@ REMOVE_MODE=0
 SKILL_DIR="${AGENT_SKILLS_DIR:-$HOME/.agent-skills}"
 COORD_SKILL_FILE="$SKILL_DIR/agent-coordination.md"
 GIT_SKILL_FILE="$SKILL_DIR/agent-git-workflow.md"
+TMP_FILES=()
+
+cleanup_tmp_files() {
+  local tmp_file
+  for tmp_file in "${TMP_FILES[@]-}"; do
+    if [[ -n "$tmp_file" ]]; then
+      rm -f "$tmp_file"
+    fi
+  done
+}
+
+trap cleanup_tmp_files EXIT
 
 usage() {
   cat <<USAGE
@@ -219,6 +231,7 @@ for entry in "${TARGETS[@]}"; do
 
     generated_block_file="$(mktemp)"
     updated_file="$(mktemp)"
+    TMP_FILES+=("$generated_block_file" "$updated_file")
 
     if [[ "$REMOVE_MODE" -eq 1 ]]; then
       if remove_managed_block "$target_file" "$updated_file"; then
@@ -233,6 +246,7 @@ for entry in "${TARGETS[@]}"; do
     fi
 
     rm -f "$generated_block_file" "$updated_file"
+    TMP_FILES=("${TMP_FILES[@]:0:${#TMP_FILES[@]}-2}")
   fi
 done
 
