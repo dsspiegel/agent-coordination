@@ -4,7 +4,6 @@ set -e
 SKILL_DIR="${HOME}/.agent-skills"
 SKILL_FILE="agent-coordination.md"
 SKILL_URL="https://raw.githubusercontent.com/dsspiegel/agent-coordination/main/AGENT-COORDINATION.md"
-SYNC_GLOBAL_URL="https://raw.githubusercontent.com/dsspiegel/agent-coordination/main/sync-global-agent-instructions.sh"
 
 # Agent configurations: "Name|Command|ConfigDir"
 # Note: 'Continue' doesn't use a command check because 'continue' is a Bash keyword.

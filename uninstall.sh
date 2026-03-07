@@ -3,7 +3,6 @@
 SKILL_DIR="${HOME}/.agent-skills"
 SKILL_FILE="agent-coordination.md"
 GIT_SKILL_FILE="agent-git-workflow.md"
-SYNC_GLOBAL_URL="https://raw.githubusercontent.com/dsspiegel/agent-coordination/main/sync-global-agent-instructions.sh"
 
 AGENTS=(
   "Claude Code|${HOME}/.claude"
