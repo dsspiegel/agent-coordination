@@ -3,7 +3,6 @@
 SKILL_DIR="${HOME}/.agent-skills"
 SKILL_FILE="agent-coordination.md"
 GIT_SKILL_FILE="agent-git-workflow.md"
-SYNC_GLOBAL_URL="https://raw.githubusercontent.com/dsspiegel/agent-coordination/main/sync-global-agent-instructions.sh"
 
 AGENTS=(
   "Claude Code|${HOME}/.claude"
@@ -60,26 +59,24 @@ echo ""
 echo "Removing managed global instruction blocks..."
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-LOCAL_SYNC_SCRIPT="${SCRIPT_DIR}/sync-global-agent-instructions.sh"
+SYNC_HELPER_URL="https://raw.githubusercontent.com/dsspiegel/agent-coordination/main/sync-helper.sh"
 
-if [[ -f "${LOCAL_SYNC_SCRIPT}" ]]; then
-  if ! bash "${LOCAL_SYNC_SCRIPT}" --remove; then
-    echo "WARNING: Failed to remove managed global instruction blocks via local helper."
-  fi
-else
-  if command -v curl &> /dev/null; then
-    TMP_SYNC_SCRIPT="$(mktemp)"
-    if curl -fsSL "${SYNC_GLOBAL_URL}" -o "${TMP_SYNC_SCRIPT}"; then
-      if ! bash "${TMP_SYNC_SCRIPT}" --remove; then
-        echo "WARNING: Failed to remove managed global instruction blocks via downloaded helper."
-      fi
-    else
-      echo "WARNING: Could not download global instruction sync helper."
-    fi
-    rm -f "${TMP_SYNC_SCRIPT}"
+if [[ -f "${SCRIPT_DIR}/sync-helper.sh" ]]; then
+  source "${SCRIPT_DIR}/sync-helper.sh"
+elif command -v curl &> /dev/null; then
+  TMP_HELPER="$(mktemp)"
+  if curl -fsSL "${SYNC_HELPER_URL}" -o "${TMP_HELPER}"; then
+    source "${TMP_HELPER}"
   else
-    echo "WARNING: curl is required to remove managed global instruction blocks in this mode."
+    echo "WARNING: Could not download sync helper."
   fi
+  rm -f "${TMP_HELPER}"
+else
+  echo "WARNING: curl is required to remove managed global instruction blocks in this mode."
+fi
+
+if command -v sync_global_agent_instructions &> /dev/null; then
+  sync_global_agent_instructions "--remove"
 fi
 
 echo "=========================================="
