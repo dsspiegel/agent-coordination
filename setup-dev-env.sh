@@ -13,6 +13,8 @@ echo "Press [Enter] to accept the default values."
 echo ""
 
 # --- Migration: Remove old agent-git-workflow.md files ---
+# Called after the new profile is successfully written to avoid leaving users
+# with no profile if the script is interrupted during interactive input.
 migrate_old_git_workflow() {
   local removed=0
 
@@ -42,8 +44,6 @@ migrate_old_git_workflow() {
     echo ""
   fi
 }
-
-migrate_old_git_workflow
 
 # 1. PR vs Direct Push (Default: a)
 while true; do
@@ -337,6 +337,9 @@ EOF
 
 echo ""
 echo "✓ Development environment profile created at ${SKILL_DIR}/${DEV_ENV_SKILL_FILE}"
+
+# Now that the new profile is safely written, clean up old files
+migrate_old_git_workflow
 
 # Sync to agents
 AGENTS=(
