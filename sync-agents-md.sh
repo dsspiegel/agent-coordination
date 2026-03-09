@@ -53,7 +53,7 @@ fi
 
 SKILL_DIR="${AGENT_SKILLS_DIR:-$HOME/.agent-skills}"
 COORD_SKILL_FILE="$SKILL_DIR/agent-coordination.md"
-GIT_SKILL_FILE="$SKILL_DIR/agent-git-workflow.md"
+DEV_ENV_SKILL_FILE="$SKILL_DIR/agent-dev-env.md"
 AGENTS_FILE="$REPO_DIR/AGENTS.md"
 
 if [[ ! -f "$COORD_SKILL_FILE" ]]; then
@@ -86,11 +86,11 @@ render_managed_block() {
     echo "### Source Of Truth"
     echo "- \`$COORD_SKILL_FILE\`"
 
-    if [[ -f "$GIT_SKILL_FILE" ]]; then
-      echo "- \`$GIT_SKILL_FILE\`"
+    if [[ -f "$DEV_ENV_SKILL_FILE" ]]; then
+      echo "- \`$DEV_ENV_SKILL_FILE\`"
       echo
-      echo "### Git Workflow Profile (Managed Snapshot)"
-      sed 's/^/> /' "$GIT_SKILL_FILE"
+      echo "### Development Environment Profile (Managed Snapshot)"
+      sed 's/^/> /' "$DEV_ENV_SKILL_FILE"
     fi
 
     echo "$END_MARKER"

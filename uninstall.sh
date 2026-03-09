@@ -2,7 +2,8 @@
 
 SKILL_DIR="${HOME}/.agent-skills"
 SKILL_FILE="agent-coordination.md"
-GIT_SKILL_FILE="agent-git-workflow.md"
+DEV_ENV_SKILL_FILE="agent-dev-env.md"
+OLD_GIT_SKILL_FILE="agent-git-workflow.md"
 
 AGENTS=(
   "Claude Code|${HOME}/.claude"
@@ -28,9 +29,16 @@ for agent_info in "${AGENTS[@]}"; do
     REMOVED=$((REMOVED + 1))
   fi
 
-  if [[ -L "${config_dir}/${GIT_SKILL_FILE}" ]]; then
-    rm "${config_dir}/${GIT_SKILL_FILE}"
-    echo "✓ Removed ${GIT_SKILL_FILE} from ${agent}"
+  if [[ -L "${config_dir}/${DEV_ENV_SKILL_FILE}" ]]; then
+    rm "${config_dir}/${DEV_ENV_SKILL_FILE}"
+    echo "✓ Removed ${DEV_ENV_SKILL_FILE} from ${agent}"
+    REMOVED=$((REMOVED + 1))
+  fi
+
+  # Clean up old git-workflow symlinks from before migration
+  if [[ -L "${config_dir}/${OLD_GIT_SKILL_FILE}" ]]; then
+    rm "${config_dir}/${OLD_GIT_SKILL_FILE}"
+    echo "✓ Removed legacy ${OLD_GIT_SKILL_FILE} from ${agent}"
     REMOVED=$((REMOVED + 1))
   fi
 done
@@ -43,9 +51,15 @@ if [[ -f "${SKILL_DIR}/${SKILL_FILE}" ]]; then
   echo "✓ Removed core skill file from ${SKILL_DIR}"
 fi
 
-if [[ -f "${SKILL_DIR}/${GIT_SKILL_FILE}" ]]; then
-  rm "${SKILL_DIR}/${GIT_SKILL_FILE}"
-  echo "✓ Removed Git workflow profile from ${SKILL_DIR}"
+if [[ -f "${SKILL_DIR}/${DEV_ENV_SKILL_FILE}" ]]; then
+  rm "${SKILL_DIR}/${DEV_ENV_SKILL_FILE}"
+  echo "✓ Removed dev environment profile from ${SKILL_DIR}"
+fi
+
+# Clean up old git-workflow file from before migration
+if [[ -f "${SKILL_DIR}/${OLD_GIT_SKILL_FILE}" ]]; then
+  rm "${SKILL_DIR}/${OLD_GIT_SKILL_FILE}"
+  echo "✓ Removed legacy Git workflow profile from ${SKILL_DIR}"
 fi
 
 # Attempt to remove the skill directory if it's empty

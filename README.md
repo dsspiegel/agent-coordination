@@ -107,19 +107,22 @@ curl -fsSL https://raw.githubusercontent.com/dsspiegel/agent-coordination/main/u
 
 The uninstall script also removes the managed instruction blocks previously added to Codex/Claude/Gemini instruction files.
 
-## Optional: Configure Git Workflow
+## Optional: Configure Development Environment
 
-AI agents often default to pushing code directly to your `main` or `master` branch. While this is fast, you might prefer reviewing their work via Pull Requests before it gets merged.
-
-This repository includes an optional tool to establish consistent Git habits across all your CLI agents.
+AI agents often make assumptions about your Git workflow, Python setup, and JavaScript tooling. This script lets you define consistent preferences across all your CLI agents.
 
 Run the interactive setup script:
 ```bash
-./setup-git-workflow.sh
+./setup-dev-env.sh
 ```
 
-This script gathers your preferences on several key Git workflow choices (like direct pushes vs. PRs, and commit message formats) and stores those rules across all your agents' **instruction profiles**.
-It also refreshes the managed instruction blocks in `~/.codex/AGENTS.md`, `~/.claude/CLAUDE.md`, and `~/.gemini/GEMINI.md` so the latest Git workflow profile is included.
+This script gathers your preferences on:
+- **Git workflow** — PRs vs. direct push, commit message style, test/lint before commit, branch cleanup, log tracking
+- **Python** — virtual environment policy, package manager (pip, uv, or poetry)
+- **JavaScript / Node.js** — local vs. global installs, package manager (npm, yarn, pnpm, or bun)
+
+Preferences are stored in `~/.agent-skills/agent-dev-env.md` and symlinked into each agent's config directory.
+It also refreshes the managed instruction blocks in `~/.codex/AGENTS.md`, `~/.claude/CLAUDE.md`, and `~/.gemini/GEMINI.md` so the latest profile is included.
 
 ## Optional: Sync `AGENTS.md` In A Repo
 
@@ -132,7 +135,7 @@ To enforce coordination rules at the repository level, generate or update a mana
 What it does:
 - Creates `AGENTS.md` if missing
 - Inserts or updates a managed coordination block
-- Pulls in your local `~/.agent-skills/agent-git-workflow.md` profile when available
+- Pulls in your local `~/.agent-skills/agent-dev-env.md` profile when available
 - Preserves any manual content outside the managed markers
 
 For CI enforcement, run check mode:

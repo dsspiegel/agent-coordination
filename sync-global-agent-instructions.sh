@@ -7,7 +7,7 @@ END_MARKER="<!-- END MANAGED: agent-coordination-global -->"
 REMOVE_MODE=0
 SKILL_DIR="${AGENT_SKILLS_DIR:-$HOME/.agent-skills}"
 COORD_SKILL_FILE="$SKILL_DIR/agent-coordination.md"
-GIT_SKILL_FILE="$SKILL_DIR/agent-git-workflow.md"
+DEV_ENV_SKILL_FILE="$SKILL_DIR/agent-dev-env.md"
 TMP_FILES=()
 
 cleanup_tmp_files() {
@@ -75,8 +75,8 @@ render_managed_block() {
     else
       echo "- \`$COORD_SKILL_FILE\` (missing)"
     fi
-    if [[ -f "$GIT_SKILL_FILE" ]]; then
-      echo "- \`$GIT_SKILL_FILE\`"
+    if [[ -f "$DEV_ENV_SKILL_FILE" ]]; then
+      echo "- \`$DEV_ENV_SKILL_FILE\`"
     fi
     echo
 
@@ -86,9 +86,9 @@ render_managed_block() {
       echo
     fi
 
-    if [[ -f "$GIT_SKILL_FILE" ]]; then
-      echo "### Git Workflow Profile (Managed Snapshot)"
-      sed 's/^/> /' "$GIT_SKILL_FILE"
+    if [[ -f "$DEV_ENV_SKILL_FILE" ]]; then
+      echo "### Development Environment Profile (Managed Snapshot)"
+      sed 's/^/> /' "$DEV_ENV_SKILL_FILE"
       echo
     fi
 

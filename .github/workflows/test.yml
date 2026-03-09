@@ -32,43 +32,54 @@ jobs:
           test -L ~/.claude/agent-coordination.md
           test -L ~/.continue/agent-coordination.md
           
-      - name: Run Setup Git Workflow Script
+      - name: Run Setup Dev Env Script (All Defaults)
         run: |
-          # Pipe blank answers to simulate hitting [Enter] for all defaults (a, a, y, y, y)
-          printf "\n\n\n\n\n" | bash setup-git-workflow.sh
-          
-      - name: Verify Setup Git Workflow
+          # Pipe blank answers to simulate hitting [Enter] for all 9 defaults
+          printf "\n\n\n\n\n\n\n\n\n" | bash setup-dev-env.sh
+
+      - name: Verify Setup Dev Env
         run: |
-          test -f ~/.agent-skills/agent-git-workflow.md
-          test -L ~/.gemini/agent-git-workflow.md
-          grep -q "numbered steps" ~/.agent-skills/agent-git-workflow.md
-          grep -q "Conventional Commits" ~/.agent-skills/agent-git-workflow.md
-          
-      - name: Run Setup Git Workflow Script (Ignore Log)
+          test -f ~/.agent-skills/agent-dev-env.md
+          test -L ~/.gemini/agent-dev-env.md
+          grep -q "numbered steps" ~/.agent-skills/agent-dev-env.md
+          grep -q "Conventional Commits" ~/.agent-skills/agent-dev-env.md
+          grep -q "virtual environment" ~/.agent-skills/agent-dev-env.md
+          grep -q "pip" ~/.agent-skills/agent-dev-env.md
+          grep -q "node_modules" ~/.agent-skills/agent-dev-env.md
+          grep -q "npm" ~/.agent-skills/agent-dev-env.md
+
+      - name: Run Setup Dev Env Script (Ignore Log)
         run: |
           # Test question 5 'No' answer for .gitignore functionality
           # Setup dummy git config to avoid errors
           git config --global user.email "test@example.com"
           git config --global user.name "Test User"
-          printf "a\na\ny\ny\nn\n" | bash setup-git-workflow.sh
+          printf "a\na\ny\ny\nn\na\na\na\na\n" | bash setup-dev-env.sh
           GLOBAL_IGNORE=$(git config --global core.excludesfile)
           grep -q "agent-actions.md" "$GLOBAL_IGNORE"
-          
-      - name: Run Setup Git Workflow Script (Track Log)
+
+      - name: Run Setup Dev Env Script (Track Log)
         run: |
           # Test question 5 'Yes' answer to verify removal from global gitignore
-          printf "a\na\ny\ny\ny\n" | bash setup-git-workflow.sh
+          printf "a\na\ny\ny\ny\na\na\na\na\n" | bash setup-dev-env.sh
           GLOBAL_IGNORE=$(git config --global core.excludesfile)
           if grep -q "agent-actions.md" "$GLOBAL_IGNORE"; then exit 1; fi
-          
-      - name: Run Setup Git Workflow Script (Track Log - XDG fallback)
+
+      - name: Run Setup Dev Env Script (Track Log - XDG fallback)
         run: |
           # Test question 5 'Yes' answer removes from XDG fallback when core.excludesfile is unset
           git config --global --unset core.excludesfile || true
           mkdir -p ~/.config/git
           echo "agent-actions.md" > ~/.config/git/ignore
-          printf "a\na\ny\ny\ny\n" | bash setup-git-workflow.sh
+          printf "a\na\ny\ny\ny\na\na\na\na\n" | bash setup-dev-env.sh
           if grep -q "agent-actions.md" ~/.config/git/ignore; then exit 1; fi
+
+      - name: Verify Migration Cleanup
+        run: |
+          # Old agent-git-workflow.md files should not exist after setup-dev-env.sh runs
+          test ! -f ~/.agent-skills/agent-git-workflow.md
+          test ! -L ~/.claude/agent-git-workflow.md
+          test ! -L ~/.gemini/agent-git-workflow.md
 
       - name: Sync AGENTS.md (Create + Check + Idempotence)
         run: |
@@ -78,7 +89,7 @@ jobs:
           bash sync-agents-md.sh --repo "$TEST_REPO"
           test -f "$TEST_REPO/AGENTS.md"
           grep -q "BEGIN MANAGED: agent-coordination" "$TEST_REPO/AGENTS.md"
-          grep -q "Git Workflow Profile (Managed Snapshot)" "$TEST_REPO/AGENTS.md"
+          grep -q "Development Environment Profile (Managed Snapshot)" "$TEST_REPO/AGENTS.md"
 
           # Check mode should pass when up to date
           bash sync-agents-md.sh --repo "$TEST_REPO" --check
@@ -110,5 +121,5 @@ jobs:
         run: |
           test ! -f ~/.agent-skills/agent-coordination.md
           test ! -L ~/.claude/agent-coordination.md
-          test ! -f ~/.agent-skills/agent-git-workflow.md
-          test ! -L ~/.gemini/agent-git-workflow.md
+          test ! -f ~/.agent-skills/agent-dev-env.md
+          test ! -L ~/.gemini/agent-dev-env.md
