@@ -2,13 +2,48 @@
 set -e
 
 SKILL_DIR="${HOME}/.agent-skills"
-GIT_SKILL_FILE="agent-git-workflow.md"
+DEV_ENV_SKILL_FILE="agent-dev-env.md"
+OLD_GIT_SKILL_FILE="agent-git-workflow.md"
 
-echo "Agent Git Workflow Setup"
-echo "========================="
-echo "This script will help you define how AI agents interact with Git."
+echo "Agent Development Environment Setup"
+echo "====================================="
+echo "This script will help you define how AI agents interact with Git"
+echo "and manage Python/JavaScript environments."
 echo "Press [Enter] to accept the default values."
 echo ""
+
+# --- Migration: Remove old agent-git-workflow.md files ---
+# Called after the new profile is successfully written to avoid leaving users
+# with no profile if the script is interrupted during interactive input.
+migrate_old_git_workflow() {
+  local removed=0
+
+  if [[ -f "${SKILL_DIR}/${OLD_GIT_SKILL_FILE}" || -L "${SKILL_DIR}/${OLD_GIT_SKILL_FILE}" ]]; then
+    rm -f "${SKILL_DIR}/${OLD_GIT_SKILL_FILE}"
+    echo "✓ Migrated: removed old ${SKILL_DIR}/${OLD_GIT_SKILL_FILE}"
+    removed=$((removed + 1))
+  fi
+
+  local AGENTS=(
+    "${HOME}/.claude"
+    "${HOME}/.gemini"
+    "${HOME}/.codex"
+    "${HOME}/.aider"
+    "${HOME}/.continue"
+  )
+
+  for config_dir in "${AGENTS[@]}"; do
+    if [[ -L "${config_dir}/${OLD_GIT_SKILL_FILE}" || -f "${config_dir}/${OLD_GIT_SKILL_FILE}" ]]; then
+      rm -f "${config_dir}/${OLD_GIT_SKILL_FILE}"
+      echo "✓ Migrated: removed old ${config_dir}/${OLD_GIT_SKILL_FILE}"
+      removed=$((removed + 1))
+    fi
+  done
+
+  if [[ $removed -gt 0 ]]; then
+    echo ""
+  fi
+}
 
 # 1. PR vs Direct Push (Default: a)
 while true; do
@@ -116,12 +151,12 @@ while true; do
 
   if [[ "$tracking_pref" == "y" || "$tracking_pref" == "Y" ]]; then
     TRACKING_TEXT="The \`agent-actions.md\` log should be tracked and committed to Git like a normal file."
-    
+
     # Optional: try to remove from global gitignore if it was previously ignored
     GLOBAL_IGNORE=$(git config --global core.excludesfile || echo "")
     XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
     DEFAULT_GLOBAL_IGNORE="${XDG_CONFIG_HOME}/git/ignore"
-    
+
     for ignore_file in "$GLOBAL_IGNORE" "$DEFAULT_GLOBAL_IGNORE"; do
       if [[ -n "$ignore_file" && -f "$ignore_file" ]] && grep -q "agent-actions.md" "$ignore_file"; then
         sed -i.bak '/agent-actions.md/d' "$ignore_file" && rm -f "${ignore_file}.bak" || true
@@ -131,12 +166,12 @@ while true; do
     break
   elif [[ "$tracking_pref" == "n" || "$tracking_pref" == "N" ]]; then
     TRACKING_TEXT="The \`agent-actions.md\` log is local-only. Never stage or commit it."
-    
+
     # Add to global gitignore
     GLOBAL_IGNORE=$(git config --global core.excludesfile || echo "")
     XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
     DEFAULT_GLOBAL_IGNORE="${XDG_CONFIG_HOME}/git/ignore"
-    
+
     if [[ -z "$GLOBAL_IGNORE" ]]; then
       if [[ -f "$DEFAULT_GLOBAL_IGNORE" ]]; then
         GLOBAL_IGNORE="$DEFAULT_GLOBAL_IGNORE"
@@ -158,13 +193,117 @@ while true; do
   fi
 done
 
+echo ""
+
+# 6. Python virtual environment (Default: a)
+while true; do
+  echo "6) Should agents use a Python virtual environment?"
+  echo "   [a] Yes, always use venv"
+  echo "   [b] No"
+  read -p "Your choice [A/b]: " venv_pref || { echo -e "\nSetup aborted."; exit 1; }
+
+  venv_pref=${venv_pref:-a}
+
+  if [[ "$venv_pref" == "a" || "$venv_pref" == "A" ]]; then
+    VENV_TEXT="Always create and activate a Python virtual environment (venv) before installing packages or running Python code. If a \`venv\`, \`.venv\`, or \`env\` directory already exists, use it."
+    break
+  elif [[ "$venv_pref" == "b" || "$venv_pref" == "B" ]]; then
+    VENV_TEXT="Do not create virtual environments unless the user specifically requests it."
+    break
+  else
+    echo "Invalid choice. Please enter 'a' or 'b' or press Enter for default."
+    echo ""
+  fi
+done
+
+echo ""
+
+# 7. Python package manager (Default: a)
+while true; do
+  echo "7) Which Python package manager do you prefer?"
+  echo "   [a] pip"
+  echo "   [b] uv"
+  echo "   [c] poetry"
+  read -p "Your choice [A/b/c]: " pypm_pref || { echo -e "\nSetup aborted."; exit 1; }
+
+  pypm_pref=${pypm_pref:-a}
+
+  if [[ "$pypm_pref" == "a" || "$pypm_pref" == "A" ]]; then
+    PYPM_TEXT="Use \`pip\` as the default Python package manager."
+    break
+  elif [[ "$pypm_pref" == "b" || "$pypm_pref" == "B" ]]; then
+    PYPM_TEXT="Use \`uv\` as the default Python package manager."
+    break
+  elif [[ "$pypm_pref" == "c" || "$pypm_pref" == "C" ]]; then
+    PYPM_TEXT="Use \`poetry\` as the default Python package manager."
+    break
+  else
+    echo "Invalid choice. Please enter 'a', 'b', or 'c' or press Enter for default."
+    echo ""
+  fi
+done
+
+echo ""
+
+# 8. JS local dependencies only (Default: a)
+while true; do
+  echo "8) Should agents install JS packages locally only (no global installs)?"
+  echo "   [a] Yes, local node_modules only"
+  echo "   [b] No, global installs acceptable"
+  read -p "Your choice [A/b]: " jslocal_pref || { echo -e "\nSetup aborted."; exit 1; }
+
+  jslocal_pref=${jslocal_pref:-a}
+
+  if [[ "$jslocal_pref" == "a" || "$jslocal_pref" == "A" ]]; then
+    JSLOCAL_TEXT="Always install packages locally into \`node_modules\`. Never use \`npm install -g\` or equivalent global installs unless the user explicitly requests it."
+    break
+  elif [[ "$jslocal_pref" == "b" || "$jslocal_pref" == "B" ]]; then
+    JSLOCAL_TEXT="Global package installs are acceptable when appropriate."
+    break
+  else
+    echo "Invalid choice. Please enter 'a' or 'b' or press Enter for default."
+    echo ""
+  fi
+done
+
+echo ""
+
+# 9. JS package manager (Default: a)
+while true; do
+  echo "9) Which JavaScript package manager do you prefer?"
+  echo "   [a] npm"
+  echo "   [b] yarn"
+  echo "   [c] pnpm"
+  echo "   [d] bun"
+  read -p "Your choice [A/b/c/d]: " jspm_pref || { echo -e "\nSetup aborted."; exit 1; }
+
+  jspm_pref=${jspm_pref:-a}
+
+  if [[ "$jspm_pref" == "a" || "$jspm_pref" == "A" ]]; then
+    JSPM_TEXT="Use \`npm\` as the default JavaScript package manager."
+    break
+  elif [[ "$jspm_pref" == "b" || "$jspm_pref" == "B" ]]; then
+    JSPM_TEXT="Use \`yarn\` as the default JavaScript package manager."
+    break
+  elif [[ "$jspm_pref" == "c" || "$jspm_pref" == "C" ]]; then
+    JSPM_TEXT="Use \`pnpm\` as the default JavaScript package manager."
+    break
+  elif [[ "$jspm_pref" == "d" || "$jspm_pref" == "D" ]]; then
+    JSPM_TEXT="Use \`bun\` as the default JavaScript package manager."
+    break
+  else
+    echo "Invalid choice. Please enter 'a', 'b', 'c', or 'd' or press Enter for default."
+    echo ""
+  fi
+done
+
 # Create the markdown file
 mkdir -p "${SKILL_DIR}"
 
-cat <<EOF > "${SKILL_DIR}/${GIT_SKILL_FILE}"
-# Git Workflow Instructions
+cat <<EOF > "${SKILL_DIR}/${DEV_ENV_SKILL_FILE}"
+# Development Environment Preferences
 
-This file defines the "Rules of Engagement" for how AI agents should interact with Git in this environment.
+This file defines development environment preferences for AI agents.
 
 ## Merging & Branching
 ${MERGE_TEXT}
@@ -183,10 +322,24 @@ ${TRACKING_TEXT}
 
 ## Accountability
 Always include the branch name and, if applicable, the Pull Request URL in your \`agent-actions.md\` log entry.
+
+## Python Environment
+- ${VENV_TEXT}
+- ${PYPM_TEXT}
+- If a \`conda\` environment or \`environment.yml\` file is present in the project, respect and use it instead of creating a new virtual environment.
+
+## JavaScript / Node.js Environment
+- ${JSLOCAL_TEXT}
+- ${JSPM_TEXT}
+- If a \`.nvmrc\` or \`.node-version\` file is present, use the specified Node.js version.
+- Respect existing lockfiles: \`package-lock.json\` → npm, \`yarn.lock\` → yarn, \`pnpm-lock.yaml\` → pnpm, \`bun.lockb\` → bun.
 EOF
 
 echo ""
-echo "✓ Git workflow profile created at ${SKILL_DIR}/${GIT_SKILL_FILE}"
+echo "✓ Development environment profile created at ${SKILL_DIR}/${DEV_ENV_SKILL_FILE}"
+
+# Now that the new profile is safely written, clean up old files
+migrate_old_git_workflow
 
 # Sync to agents
 AGENTS=(
@@ -201,14 +354,14 @@ LINKED=0
 for agent_info in "${AGENTS[@]}"; do
   IFS='|' read -r agent config_dir <<< "$agent_info"
   if [[ -d "${config_dir}" ]]; then
-    ln -sf "${SKILL_DIR}/${GIT_SKILL_FILE}" "${config_dir}/${GIT_SKILL_FILE}"
-    echo "✓ Linked to ${agent} profile (${config_dir}/${GIT_SKILL_FILE})"
+    ln -sf "${SKILL_DIR}/${DEV_ENV_SKILL_FILE}" "${config_dir}/${DEV_ENV_SKILL_FILE}"
+    echo "✓ Linked to ${agent} profile (${config_dir}/${DEV_ENV_SKILL_FILE})"
     LINKED=$((LINKED + 1))
   fi
 done
 
 echo ""
-echo "Done! Your Git workflow preferences are now active for ${LINKED} agent(s)."
+echo "Done! Your development environment preferences are now active for ${LINKED} agent(s)."
 
 echo ""
 echo "Syncing global instruction entry points..."
