@@ -347,13 +347,13 @@ done
 if [[ "$IMPL_NAME" == "Unassigned" ]]; then
   IMPL_LINE="- **Implementer: Unassigned** — Any agent may write plans and code. Coordinate in \`agent-actions.md\` to avoid conflicts."
 else
-  IMPL_LINE="- **Implementer: ${IMPL_NAME}** — Writes plans and code. Must NOT review own work; mark PRs as \`Ready for Reviewer\` when done."
+  IMPL_LINE="- **Implementer: ${IMPL_NAME}** — Writes plans and code. Must NOT review own work. Log \`Ready for Reviewer\` in \`agent-actions.md\` when a PR is ready for review."
 fi
 
 if [[ "$REV_NAME" == "Unassigned" ]]; then
   REV_LINE="- **Reviewer: Unassigned** — Any agent may review code. Document review findings in \`agent-actions.md\`."
 else
-  REV_LINE="- **Reviewer: ${REV_NAME}** — Reviews PRs and code changes. Provides feedback or approves before merge."
+  REV_LINE="- **Reviewer: ${REV_NAME}** — Reviews PRs and code changes. Must NOT implement code unless explicitly asked. Log feedback in \`agent-actions.md\` and hand back to the Implementer."
 fi
 
 ROLES_TEXT="${IMPL_LINE}

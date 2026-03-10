@@ -53,6 +53,10 @@ jobs:
           grep -q "Must NOT" ~/.agent-skills/agent-dev-env.md
           grep -q "Ready for Reviewer" ~/.agent-skills/agent-dev-env.md
           grep -q "should not disrupt" ~/.agent-skills/agent-dev-env.md
+          grep -q "Must NOT implement code" ~/.agent-skills/agent-dev-env.md
+          grep -q "Log feedback in" ~/.agent-skills/agent-dev-env.md
+          grep -q "hand back to the Implementer" ~/.agent-skills/agent-dev-env.md
+          grep -q "Log .Ready for Reviewer. in .agent-actions.md." ~/.agent-skills/agent-dev-env.md
 
       - name: Run Setup Dev Env Script (Ignore Log)
         run: |
