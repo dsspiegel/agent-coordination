@@ -91,6 +91,25 @@ jobs:
           test ! -L ~/.claude/agent-git-workflow.md
           test ! -L ~/.gemini/agent-git-workflow.md
 
+      - name: Verify Global Instruction Blocks Are Slim
+        run: |
+          # All three global files should have the slim structure (no inlined snapshots)
+          for f in ~/.claude/CLAUDE.md ~/.codex/AGENTS.md ~/.gemini/GEMINI.md; do
+            echo "Checking $f"
+            grep -q "### Required Workflow" "$f"
+            grep -q "### Source Of Truth" "$f"
+            grep -q "ALWAYS read" "$f"
+            grep -q "ALWAYS create" "$f"
+            if grep -q "Coordination Profile (Managed Snapshot)" "$f"; then
+              echo "FAIL: $f still contains coordination snapshot"
+              exit 1
+            fi
+            if grep -q "Development Environment Profile (Managed Snapshot)" "$f"; then
+              echo "FAIL: $f still contains dev-env snapshot"
+              exit 1
+            fi
+          done
+
       - name: Sync AGENTS.md (Create + Check + Idempotence)
         run: |
           TEST_REPO="$(mktemp -d)"

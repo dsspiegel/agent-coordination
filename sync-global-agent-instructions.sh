@@ -64,10 +64,11 @@ render_managed_block() {
     echo "Do not edit inside these markers; re-run the installer/setup scripts instead."
     echo
     echo "### Required Workflow"
-    echo "- Before starting work, read \`agent-actions.md\` in the current repository."
-    echo "- If \`agent-actions.md\` does not exist, create it using the bootstrap pattern."
+    echo "- ALWAYS read \`agent-actions.md\` in the project root before starting work."
+    echo "- If \`agent-actions.md\` does not exist, ALWAYS create it using the bootstrap pattern — even in new or empty projects."
     echo "- After meaningful progress, blockers, reviews, or handoffs, append an entry to \`agent-actions.md\`."
     echo "- Do not silently undo another agent's approach; document reasoning first."
+    echo "- For full protocol details, read the Source Of Truth files listed below."
     echo
     echo "### Source Of Truth"
     if [[ -f "$COORD_SKILL_FILE" ]]; then
@@ -79,18 +80,6 @@ render_managed_block() {
       echo "- \`$DEV_ENV_SKILL_FILE\`"
     fi
     echo
-
-    if [[ -f "$COORD_SKILL_FILE" ]]; then
-      echo "### Coordination Profile (Managed Snapshot)"
-      sed 's/^/> /' "$COORD_SKILL_FILE"
-      echo
-    fi
-
-    if [[ -f "$DEV_ENV_SKILL_FILE" ]]; then
-      echo "### Development Environment Profile (Managed Snapshot)"
-      sed 's/^/> /' "$DEV_ENV_SKILL_FILE"
-      echo
-    fi
 
     echo "$END_MARKER"
   } > "$output_file"
