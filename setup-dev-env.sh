@@ -297,6 +297,69 @@ while true; do
   fi
 done
 
+echo ""
+
+# 10. Implementer role (Default: 1)
+while true; do
+  echo "10) Which agent should be the primary Implementer (writes plans and code)?"
+  echo "   [1] Claude Code"
+  echo "   [2] Codex"
+  echo "   [3] Gemini CLI"
+  echo "   [4] Aider"
+  echo "   [5] Unassigned"
+  read -p "Your choice [1/2/3/4/5]: " impl_pref || { echo -e "\nSetup aborted."; exit 1; }
+
+  impl_pref=${impl_pref:-1}
+
+  case "$impl_pref" in
+    1) IMPL_NAME="Claude Code"; break ;;
+    2) IMPL_NAME="Codex"; break ;;
+    3) IMPL_NAME="Gemini CLI"; break ;;
+    4) IMPL_NAME="Aider"; break ;;
+    5) IMPL_NAME="Unassigned"; break ;;
+    *) echo "Invalid choice. Please enter 1-5 or press Enter for default."; echo "" ;;
+  esac
+done
+
+echo ""
+
+# 11. Reviewer role (Default: 1)
+while true; do
+  echo "11) Which agent should be the primary Reviewer (reviews code before merge)?"
+  echo "   [1] Codex"
+  echo "   [2] Claude Code"
+  echo "   [3] Gemini CLI"
+  echo "   [4] Unassigned"
+  read -p "Your choice [1/2/3/4]: " rev_pref || { echo -e "\nSetup aborted."; exit 1; }
+
+  rev_pref=${rev_pref:-1}
+
+  case "$rev_pref" in
+    1) REV_NAME="Codex"; break ;;
+    2) REV_NAME="Claude Code"; break ;;
+    3) REV_NAME="Gemini CLI"; break ;;
+    4) REV_NAME="Unassigned"; break ;;
+    *) echo "Invalid choice. Please enter 1-4 or press Enter for default."; echo "" ;;
+  esac
+done
+
+# Build ROLES_TEXT
+if [[ "$IMPL_NAME" == "Unassigned" ]]; then
+  IMPL_LINE="- **Implementer: Unassigned** — Any agent may write plans and code. Coordinate in \`agent-actions.md\` to avoid conflicts."
+else
+  IMPL_LINE="- **Implementer: ${IMPL_NAME}** — Writes plans and code. Must NOT review own work. Log \`Ready for Reviewer\` in \`agent-actions.md\` when a PR is ready for review."
+fi
+
+if [[ "$REV_NAME" == "Unassigned" ]]; then
+  REV_LINE="- **Reviewer: Unassigned** — Any agent may review code. Document review findings in \`agent-actions.md\`."
+else
+  REV_LINE="- **Reviewer: ${REV_NAME}** — Reviews PRs and code changes. Must NOT implement code unless explicitly asked. Log feedback in \`agent-actions.md\` and hand back to the Implementer."
+fi
+
+ROLES_TEXT="${IMPL_LINE}
+${REV_LINE}
+- Other agents should not disrupt these roles. They may assist with research, debugging, or tasks that do not conflict with the Implementer/Reviewer workflow."
+
 # Create the markdown file
 mkdir -p "${SKILL_DIR}"
 
@@ -333,6 +396,9 @@ Always include the branch name and, if applicable, the Pull Request URL in your 
 - ${JSPM_TEXT}
 - If a \`.nvmrc\` or \`.node-version\` file is present, use the specified Node.js version.
 - Respect existing lockfiles: \`package-lock.json\` → npm, \`yarn.lock\` → yarn, \`pnpm-lock.yaml\` → pnpm, \`bun.lockb\` → bun.
+
+## Agent Roles & Responsibilities
+${ROLES_TEXT}
 EOF
 
 echo ""
