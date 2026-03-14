@@ -98,8 +98,9 @@ jobs:
             echo "Checking $f"
             grep -q "### Required Workflow" "$f"
             grep -q "### Source Of Truth" "$f"
-            grep -q "ALWAYS read" "$f"
-            grep -q "ALWAYS create" "$f"
+            grep -q "FIRST action" "$f"
+            grep -q "before doing anything else" "$f"
+            grep -q "LAST action" "$f"
             if grep -q "Coordination Profile (Managed Snapshot)" "$f"; then
               echo "FAIL: $f still contains coordination snapshot"
               exit 1
@@ -119,6 +120,9 @@ jobs:
           test -f "$TEST_REPO/AGENTS.md"
           grep -q "BEGIN MANAGED: agent-coordination" "$TEST_REPO/AGENTS.md"
           grep -q "Development Environment Profile (Managed Snapshot)" "$TEST_REPO/AGENTS.md"
+          grep -q "FIRST action" "$TEST_REPO/AGENTS.md"
+          grep -q "before doing anything else" "$TEST_REPO/AGENTS.md"
+          grep -q "LAST action" "$TEST_REPO/AGENTS.md"
 
           # Check mode should pass when up to date
           bash sync-agents-md.sh --repo "$TEST_REPO" --check

@@ -64,11 +64,10 @@ render_managed_block() {
     echo "Do not edit inside these markers; re-run the installer/setup scripts instead."
     echo
     echo "### Required Workflow"
-    echo "- ALWAYS read \`agent-actions.md\` in the project root before starting work."
-    echo "- If \`agent-actions.md\` does not exist, ALWAYS create it using the bootstrap pattern — even in new or empty projects."
-    echo "- After meaningful progress, blockers, reviews, or handoffs, append an entry to \`agent-actions.md\`."
-    echo "- Do not silently undo another agent's approach; document reasoning first."
-    echo "- For full protocol details, read the Source Of Truth files listed below."
+    echo "- Your FIRST action in any session: read \`agent-actions.md\` in the project root. If the file does not exist, create it before doing anything else — even in new or empty projects."
+    echo "- Your LAST action before finishing: append a log entry to \`agent-actions.md\` summarizing what you did, any blockers, and suggested next steps."
+    echo "- Do not silently undo another agent's approach; document reasoning in \`agent-actions.md\` first."
+    echo "- For the full protocol (log format, bootstrap template, handoff/review procedures), read the Source Of Truth files below."
     echo
     echo "### Source Of Truth"
     if [[ -f "$COORD_SKILL_FILE" ]]; then
