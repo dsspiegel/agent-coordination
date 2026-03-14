@@ -74,10 +74,9 @@ render_managed_block() {
     echo "Do not edit inside these markers; re-run the script instead."
     echo
     echo "### Required Workflow"
-    echo "1. Before starting work, read \`agent-actions.md\` in the repo root."
-    echo "2. If \`agent-actions.md\` does not exist, create it using the bootstrap pattern in \`$COORD_SKILL_FILE\`."
-    echo "3. After meaningful progress, blockers, reviews, or handoffs, append an entry to \`agent-actions.md\` with summary, details, blockers, and next steps."
-    echo "4. Do not silently undo another agent's approach; document reasoning for significant approach changes in the log first."
+    echo "1. FIRST action in any session: read \`agent-actions.md\` in the repo root. If it does not exist, create it before doing anything else using the bootstrap pattern in \`$COORD_SKILL_FILE\`."
+    echo "2. LAST action before finishing: append a log entry to \`agent-actions.md\` with summary, details, blockers, and next steps."
+    echo "3. Do not silently undo another agent's approach; document reasoning for significant approach changes in the log first."
     echo
     echo "### Scope"
     echo "- Applies to all agents working in this repository."

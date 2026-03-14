@@ -16,16 +16,17 @@ This file defines how AI coding agents should coordinate when multiple agents wo
 ### Location
 Every project should have an `agent-actions.md` file in the project root.
 
-### Before Starting Work
-1. Read the entire `agent-actions.md` file
+### Before Starting Work (Mandatory)
+Your first action in any session — before writing code, creating files, or making plans:
+1. Read the entire `agent-actions.md` file. If it does not exist, create it using the bootstrap template below.
 2. Check the most recent entries for:
    - Work in progress that you should continue
    - Blockers or failed approaches to avoid
    - Context that affects your current task
 3. Review recent commits/changes if the log references them
 
-### When to Log
-Log after:
+### Before Finishing (Mandatory)
+Your last action before ending a session — append a log entry to `agent-actions.md`. Log after:
 - Completing a feature or significant component
 - Hitting a blocker that took multiple attempts to resolve
 - Making an architectural decision
