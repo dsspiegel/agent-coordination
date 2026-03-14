@@ -102,3 +102,31 @@ fi
 if command -v sync_global_agent_instructions &> /dev/null; then
   sync_global_agent_instructions
 fi
+
+# Offer to configure development environment preferences (interactive only)
+if [[ -t 0 ]]; then
+  echo ""
+  echo "Would you like to configure how agents handle Git, Python, and JavaScript in your projects?"
+  echo "(Recommended for first-time setup)"
+  read -p "[Y/n]: " setup_pref || { echo ""; }
+
+  setup_pref=${setup_pref:-y}
+
+  if [[ "$setup_pref" == "y" || "$setup_pref" == "Y" ]]; then
+    SETUP_DEV_ENV_URL="https://raw.githubusercontent.com/dsspiegel/agent-coordination/main/setup-dev-env.sh"
+
+    if [[ -f "${SCRIPT_DIR}/setup-dev-env.sh" ]]; then
+      bash "${SCRIPT_DIR}/setup-dev-env.sh"
+    elif command -v curl &> /dev/null; then
+      TMP_SETUP="$(mktemp)"
+      if curl -fsSL "${SETUP_DEV_ENV_URL}" -o "${TMP_SETUP}"; then
+        bash "${TMP_SETUP}"
+      else
+        echo "WARNING: Could not download setup-dev-env.sh."
+      fi
+      rm -f "${TMP_SETUP}"
+    else
+      echo "WARNING: curl is required to download setup-dev-env.sh."
+    fi
+  fi
+fi
