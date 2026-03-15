@@ -121,15 +121,15 @@ if [[ -t 0 ]]; then
     if [[ -f "${SCRIPT_DIR}/setup-dev-env.sh" ]]; then
       bash "${SCRIPT_DIR}/setup-dev-env.sh"
     elif command -v curl &> /dev/null; then
-      TMP_SETUP="$(mktemp)"
-      trap 'rm -f "${TMP_SETUP}"' EXIT INT TERM
-      if curl -fsSL "${SETUP_DEV_ENV_URL}" -o "${TMP_SETUP}"; then
-        bash "${TMP_SETUP}"
-      else
-        echo "WARNING: Could not download setup-dev-env.sh."
-      fi
-      rm -f "${TMP_SETUP}"
-      trap - EXIT INT TERM
+      (
+        TMP_SETUP="$(mktemp)"
+        trap 'rm -f "${TMP_SETUP}"' EXIT INT TERM
+        if curl -fsSL "${SETUP_DEV_ENV_URL}" -o "${TMP_SETUP}"; then
+          bash "${TMP_SETUP}"
+        else
+          echo "WARNING: Could not download setup-dev-env.sh."
+        fi
+      )
     else
       echo "WARNING: curl is required to download setup-dev-env.sh."
     fi
